@@ -4,6 +4,7 @@
   #config.vm.boot_mode = :gui
 #end
 
+
 Vagrant.configure("2") do |config|
   config.vm.box = "ubuntu/trusty64"
   #config.vm.box = "ubuntu/trusty32"
@@ -19,6 +20,14 @@ Vagrant.configure("2") do |config|
   #config.vm.network :private_network, type: "dhcp"
   #config.vm.network :private_network, ip: "192.168.0.300"
   config.vm.network :forwarded_port, guest:6633, host:6637 # forwarding of port
+
+  #Configure proxy if testbed environemnt is set 
+  #use ENV='testbed' vagrant up
+  if ENV['ENV'] == 'testbed' 
+  	config.proxy.http     = "http://proxy.zen:8080"
+  	config.proxy.https    = "http://proxy.zen:8080"
+  	config.proxy.no_proxy = "localhost,127.0.0.1"
+  end
 
   ## Provisioning
   config.vm.provision :shell, privileged: true, :inline => "apt-get update && apt-get install -y git"
