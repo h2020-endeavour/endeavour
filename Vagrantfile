@@ -30,7 +30,7 @@ Vagrant.configure("2") do |config|
   end
 
   ## Provisioning
-  config.vm.provision :shell, privileged: true, :inline => "apt-get update && apt-get install -y git"
+  config.vm.provision :shell, privileged: true, :inline => "apt-get update && apt-get install -y git python-oslo.config"
   config.vm.provision :shell, privileged: false, :inline => "git clone https://github.com/h2020-endeavour/iSDX.git"
   config.vm.provision :shell, privileged: false, :inline => "cd iSDX && bash setup/basic-setup.sh"
   config.vm.provision :shell, privileged: false, :inline => "cd iSDX && bash setup/ovs-setup.sh"
