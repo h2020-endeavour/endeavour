@@ -57,6 +57,9 @@ class Umbrella(app_manager.RyuApp):
         datapath = ev.msg.datapath
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
+        # TODO: this is doing some static load balancing.
+        # We will revise this as soon as we work on the
+        # more complete load balancer.
         self.send_group_mod(datapath, 1, [4, 3, 2, 1])
         self.send_group_mod(datapath, 2, [3, 4, 1, 2])
         self.send_group_mod(datapath, 3, [2, 1, 4, 3])
