@@ -25,13 +25,13 @@ class SDXTopo( Topo ):
         edge_switches = []
         for i in range(1, 5):
             edge_switches.append(self.addSwitch(
-                'edge%s' % i, dpid='000000000000000%s' % i))
+                'edge%s' % i, dpid='000000000000000%s' % i, protocols='OpenFlow13'))
 
         # core switches
         core_switches = []
         for i in range(1, 5):
             core_switches.append(self.addSwitch(
-                'core%s' % i, dpid='00000000000000%s0' % i))
+                'core%s' % i, dpid='00000000000000%s0' % i, protocols='OpenFlow13'))
 
         # connect edge to core links
         for edge_switch in edge_switches:

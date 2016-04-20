@@ -28,7 +28,7 @@ Start the topology on Mininet.
 $ cd endeavour && python examples/test-umbrella/mininet/simple_sdx.py
 ```
     
-In another terminal session.
+In another terminal session. Before run ryu-manager, correct the path in umbrella/fabric.cfg where the cloned endeavour directory is placed.
 
 ```bash
 $ ryu-manager umbrella/umbrella.py --config-file umbrella/fabric.cfg 
