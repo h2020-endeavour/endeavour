@@ -29,9 +29,8 @@ $ cd endeavour && python examples/test-umbrella/mininet/simple_sdx.py
 ```
     
 In another terminal session.
-
 ```bash
-$ ryu-manager umbrella/umbrella.py --config-file umbrella/fabric.cfg 
+$ cd endeavour && ryu-manager umbrella/umbrella.py --config-file umbrella/fabric.cfg
 ```
 
 Flows and groups installed can be checked with ovs-ofctl. E.g:
