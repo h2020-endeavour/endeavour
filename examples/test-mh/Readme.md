@@ -4,7 +4,7 @@
 
 Open a terminal and run the test topology:
 
-    $ sudo python ~/endeavour/examples/test-mh/mininet/
+    $ sudo python ~/endeavour/examples/test-mh/mininet/simple_sdx.py
 
 Open a second terminal, go to the iSDX folder, checkout the branch mh-ctrlr, 
 and run the controller:
