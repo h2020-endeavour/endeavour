@@ -1,9 +1,10 @@
 #!/usr/bin/python
 import argparse
-import os
-import sys
+import os, sys
+import json
 
-sys.path.append('endeavour/uctrl/')
+sys.path.append('endeavour/uctrl')
+from lib import Config
 
 from mininet.topo import Topo
 from mininet.net import Mininet
@@ -16,6 +17,7 @@ from lib import Config
 ROUTE_SERVER_IP = '172.0.255.254'
 ROUTE_SERVER_ASN = 65000
 
+path_mininet_config = 'endeavour/examples/test-mh/mininet/mininet.cfg'
 
 class SDXTopo( Topo ):
     def __init__( self, config, *args, **kwargs ):
@@ -29,6 +31,9 @@ class SDXTopo( Topo ):
         # IXP fabric
         # edge switches
         edge_switches = []
+
+        participant_config = json.load(open(path_mininet_config, 'r'))
+
         for i in range(1, 5):
             edge_switches.append(self.addSwitch(
                 'edge%s' % i, dpid='000000000000000%s' % i))
@@ -61,43 +66,42 @@ class SDXTopo( Topo ):
         # Connects one participant to one of the four edge switches
         # Each participant consists of 1 quagga router PLUS
         # 1 host per network advertised behind quagga
+        
         name = 'a1'
         self.addParticipant(fabric=edge_switches[0],
                             name=name,
-                            port=self.config.participants[name]['Ports'][0]['Id'],
-                            mac=self.config.participants[name]['Ports'][0]['MAC'],
-                            ip=self.config.participants[name]['Ports'][0]['IP'],
-                            networks=['100.0.0.0/24', '110.0.0.0/24'],
-                            asn=self.config.participants[name]['ASN'])
-
+                            port=participant_config[name]['port'],
+                            mac=participant_config[name]['mac'],
+                            ip=participant_config[name]['ip'],
+                            networks=participant_config[name]['networks'],
+                            asn=participant_config[name]['asn'])
+        
         name = 'b1'
         self.addParticipant(fabric=edge_switches[1],
                             name=name,
-                            port=self.config.participants[name]['Ports'][0]['Id'],
-                            mac=self.config.participants[name]['Ports'][0]['MAC'],
-                            ip=self.config.participants[name]['Ports'][0]['IP'],
-                            networks=['140.0.0.0/24', '150.0.0.0/24'],
-                            asn=self.config.participants[name]['ASN'])
-
+                            port=participant_config[name]['port'],
+                            mac=participant_config[name]['mac'],
+                            ip=participant_config[name]['ip'],
+                            networks=participant_config[name]['networks'],
+                            asn=participant_config[name]['asn'])
+        
         name = 'c1'
         self.addParticipant(fabric=edge_switches[2],
-                            name=name,
-                            port=self.config.participants[name]['Ports'][0]['Id'],
-                            mac=self.config.participants[name]['Ports'][0]['MAC'],
-                            ip=self.config.participants[name]['Ports'][0]['IP'],
-                            networks=['140.0.0.0/24', '150.0.0.0/24'],
-                            asn=self.config.participants[name]['ASN'])
+                             name=name,
+                            port=participant_config[name]['port'],
+                            mac=participant_config[name]['mac'],
+                            ip=participant_config[name]['ip'],
+                            networks=participant_config[name]['networks'],
+                            asn=participant_config[name]['asn'])
 
         name = 'c2'
         self.addParticipant(fabric=edge_switches[3],
                             name=name,
-                            port=self.config.participants[name]['Ports'][0]['Id'],
-                            mac=self.config.participants[name]['Ports'][0]['MAC'],
-                            ip=self.config.participants[name]['Ports'][0]['IP'],
-                            networks=['140.0.0.0/24', '150.0.0.0/24'],
-                            asn=self.config.participants[name]['ASN'])
-
-
+                            port=participant_config[name]['port'],
+                            mac=participant_config[name]['mac'],
+                            ip=participant_config[name]['ip'],
+                            networks=participant_config[name]['networks'],
+                            asn=participant_config[name]['asn'])
 
 
     def addParticipant(self,fabric,name,port,mac,ip,networks,asn):
