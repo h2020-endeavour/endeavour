@@ -12,6 +12,7 @@ import util.log
 
 from xctrl.flowmodmsg import FlowModMsgBuilder
 
+DEFAULT_PRIORITY = 1
 FORWARDING_PRIORITY = 4
 ARP_PRIORITY = 8
 ETH_TYPE_ARP = 0x0806
@@ -57,8 +58,8 @@ class Umbrella(object):
                 out_port = peers[peer]
                 match = self.ARP_match(peer.ip)
                 action = {"fwd": [out_port]}
-                self.fm_builder.add_flow_mod("insert", rule_type, ARP_PRIORITY, match, action)
-        
+                self.fm_builder.add_flow_mod("insert", rule_type, ARP_PRIORITY, match, action, self.config.dpid_2_name[dp])
+
         #TODO: peers are in different edges. Edges connected directly.
         # Or create a different class to handle topologies like this 
 
@@ -74,7 +75,7 @@ class Umbrella(object):
                         edge_port = self.config.edge_peers[target_dp][host]
                         match = self.ARP_match(host.ip)
                         actions = {"set_eth_dst": self.create_umbrella_mac(core_port_to_target, edge_port), "fwd": [out_port_to_core]}
-                        self.fm_builder.add_flow_mod("insert", rule_type, ARP_PRIORITY, match, action) 
+                        self.fm_builder.add_flow_mod("insert", rule_type, ARP_PRIORITY, match, actions, self.config.dpid_2_name[edge]) 
 
     def handle_ingress_l2(self, rule_type):
         # peers are in the same edge
@@ -84,7 +85,7 @@ class Umbrella(object):
                 out_port = peers[peer]
                 match = self.l2_match(peer.mac)
                 action = {"fwd": [out_port]}
-                self.fm_builder.add_flow_mod("insert", rule_type, FORWARDING_PRIORITY, match, action)
+                self.fm_builder.add_flow_mod("insert", rule_type, FORWARDING_PRIORITY, match, action, self.config.dpid_2_name[dp])
         
         for edge in self.config.edge_peers:
             for target_dp, hosts in self.config.edge_peers.iteritems():
@@ -97,13 +98,12 @@ class Umbrella(object):
                         edge_port = self.config.edge_peers[target_dp][host]
                         match = self.l2_match(host.mac)
                         actions = {"set_eth_dst": self.create_umbrella_mac(core_port_to_target, edge_port), "fwd": [out_port_to_core]}
-                        self.fm_builder.add_flow_mod("insert", rule_type, FORWARDING_PRIORITY, match, action) 
+                        self.fm_builder.add_flow_mod("insert", rule_type, FORWARDING_PRIORITY, match, actions, self.config.dpid_2_name[edge]) 
 
     def create_egress_match(self, edge_port):
         mac_2nd_byte = '{}'.format('0' + format(edge_port, 'x') if len(hex(edge_port)) == 3 else format(edge_port, 'x'))
-        eth_dst = '00:%s:00:00:00:00' % (mac_2nd_byte)
-        eth_dst_mask = "00:ff:00:00:00:00"
-        match = {"eth_dst":eth_dst, "eth_dst_mask": eth_dst_mask}
+        eth_dst = ('00:%s:00:00:00:00' % (mac_2nd_byte), "00:ff:00:00:00:00")
+        match = {"eth_dst":eth_dst}
         return match
 
     def handle_egress(self, rule_type):
@@ -115,14 +115,13 @@ class Umbrella(object):
                 edge_port = self.config.edge_peers[dp][peer]
                 match = self.create_egress_match(edge_port)
                 peer_mac = peer.mac
-                action = {"set_eth_dst": peer_mac, "fwd":edge_port}
-                self.fm_builder.add_flow_mod("insert", rule_type, FORWARDING_PRIORITY, match, action) 
+                action = {"set_eth_dst": peer_mac, "fwd": [edge_port]}
+                self.fm_builder.add_flow_mod("insert", rule_type, FORWARDING_PRIORITY, match, action, self.config.dpid_2_name[dp]) 
 
     def create_core_match(self, out_port):
         mac_1st_byte = '{}'.format('0' + format(out_port, 'x') if len(hex(out_port)) == 3 else format(out_port, 'x'))
-        eth_dst = '%s:00:00:00:00:00' % (mac_1st_byte)
-        eth_dst_mask = "ff:00:00:00:00:00"
-        match = {"eth_dst": eth_dst, "eth_dst_mask": eth_dst_mask}
+        eth_dst = ('%s:00:00:00:00:00' % (mac_1st_byte), "ff:00:00:00:00:00")
+        match = {"eth_dst": eth_dst}
         return match
 
     def handle_core_switches(self, rule_type):
@@ -133,7 +132,15 @@ class Umbrella(object):
                 out_port = self.config.core_edge[core][edge]
                 match = self.create_core_match(out_port)
                 action = {"fwd": [out_port]}
-                self.fm_builder.add_flow_mod("insert", rule_type, FORWARDING_PRIORITY, match, action)
+
+                self.fm_builder.add_flow_mod("insert", rule_type, FORWARDING_PRIORITY, match, action, self.config.dpid_2_name[core] )
+
+    # Just send load balancer flows to umbrella. 
+    def lbalancer_flow(self, rule_type):
+        for edge in self.config.edge_core:
+            match = {}
+            action = {"fwd": ["umbrella-edge"]}
+            self.fm_builder.add_flow_mod("insert", rule_type, DEFAULT_PRIORITY, match, action, self.config.dpid_2_name[edge]) 
 
     def start(self):
         self.logger.info('start')
@@ -141,5 +148,6 @@ class Umbrella(object):
         self.handle_ingress_l2("umbrella-edge")
         self.handle_core_switches("umbrella-core")
         self.handle_egress("umbrella-edge")
+        self.lbalancer_flow("load-balancer")
         self.sender.send(self.fm_builder.get_msg())
         self.logger.info('sent flow mods to reference monitor')
