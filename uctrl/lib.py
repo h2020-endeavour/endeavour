@@ -4,7 +4,9 @@ import json
 import logging
 import os
 import sys
+import copy
 from collections import namedtuple
+from netaddr import IPNetwork
 
 isdx_folder = "iSDX"
 home = os.path.expanduser("~/")
@@ -16,6 +18,9 @@ if isdx_path not in sys.path:
 class Config(object):
     def __init__(self, config_file):
         # Connections between core and edge
+        # TODO: do I really need all this information?
+        self.dpids = {}
+        self.dpid_2_name = {}
         self.core_edge = {}
         self.edge_peers = {}
         self.edge_to_edge = {}
@@ -25,6 +30,7 @@ class Config(object):
         self.flanc_auth = None
         self.route_server = None
         self.arp_proxy = None
+        self.vnhs = None
         config = json.load(open(config_file, 'r'))
 
         if "RefMon Server" in config:
@@ -34,10 +40,12 @@ class Config(object):
             self.flanc_auth = config["Flanc Auth Info"]
 
         if "Route Server" in config:
-            self.route_server = config["Route Server"]
+            route_server = config["Route Server"]
+            self.route_server = Port(route_server['Port'], route_server["MAC"], route_server["IP"], route_server["switch"])
 
         if "ARP Proxy" in config:
-            self.arp_proxy = config["ARP Proxy"]
+            arp_proxy = config["ARP Proxy"]
+            self.arp_proxy = Port(arp_proxy['Port'], arp_proxy["MAC"], arp_proxy["IP"], arp_proxy["switch"])
 
         if "Participants" in config:
             self.participants = config["Participants"]
@@ -47,36 +55,50 @@ class Config(object):
                 datapaths = config["RefMon Settings"]["fabric options"]["dpids"]
                 edges = {x:datapaths[x] for x in datapaths if x.find('edge') == 0}
                 cores = {x:datapaths[x] for x in datapaths if x.find('core') == 0}
+
+            if "dpids" in config["RefMon Settings"]["fabric options"]:
+                    self.dpids = config["RefMon Settings"]["fabric options"]["dpids"]
+                    for k,v in self.dpids.iteritems():
+                        self.dpid_2_name[v] = k
+
             if "fabric connections" in config["RefMon Settings"]:
                 datapaths_conns = config["RefMon Settings"]["fabric connections"]
                 for dp in edges:
+                    self.edge_peers.setdefault(self.dpids[dp], {})
                     if dp in datapaths_conns:
                         edge = edges[dp]
-                        self.parse_edge_peers(edge, self.participants, datapaths_conns[dp])
                         self.parse_edge_core(edge, cores, datapaths_conns[dp])
                         self.parse_edge_to_edge(edge, edges, datapaths_conns[dp])
+                self.parse_edge_peers(datapaths_conns)
                 for dp in cores:
                     if dp in datapaths_conns:
                         core = cores[dp]
                         self.parse_core_edge(core, edges, datapaths_conns[dp])
 
-    # Code could be simpler with a different specification of configuration
-    # However, we want as few as possible modifications to iSDX
-    def parse_edge_peers(self, edge, participants, dp_conns):
-        self.edge_peers.setdefault(edge, {})
-        for conn in dp_conns:
-            # Only peer connections
-            if conn in participants:
-                ports = participants[conn]["Ports"]
-                # Eder: Would be interesting to have peers per ports in the
-                # configuration file?
-                # peers = participants[conn]["Peers"]
-                for port in ports:
-                    ip = port["IP"]
-                    mac = port["MAC"]
-                    port = Port(mac, ip)
-                    self.edge_peers[edge][port] = dp_conns[conn]
+                #  ARP proxy and Route Server are not peers but forwarding in 
+                #  umbrella  is the same for every node connected to the 
+                #  edges of the fabric
+                self.edge_peers[self.dpids[self.arp_proxy.switch]][self.arp_proxy] = self.arp_proxy.id
+                self.edge_peers[self.dpids[self.route_server.switch]][self.route_server] = self.route_server.id
+        if "VNHs" in config:
+            self.vnhs = IPNetwork(config["VNHs"])
 
+    def parse_edge_peers(self, dp_conns):
+        for dp in dp_conns:
+            links = dp_conns[dp]
+            for p in links:
+                ports = links[p]
+                if isinstance(ports, int):
+                    ports = [ports]
+                i = 0
+                if p in self.participants:
+                    for port in self.participants[p]["Ports"]:
+                         if port["switch"] == dp:
+                            port = Port(port['Id'], port["MAC"], port["IP"], port["switch"])
+                            dpid = self.dpids[dp]
+                            self.edge_peers[dpid][port] = ports[i]
+                            i += 1
+                            print self.edge_peers
 
     # Builds a list with:
     # edge dp id - core dp id -> port
@@ -100,4 +122,4 @@ class Config(object):
             if dp in edges:
                 self.edge_to_edge[edge][dp] = dp_conns[dp]
 
-Port = namedtuple('Peer', "mac ip")
+Port = namedtuple('Port', "id mac ip switch")
