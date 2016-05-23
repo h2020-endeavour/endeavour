@@ -140,7 +140,9 @@ class Umbrella(object):
         for edge in self.config.edge_core:
             match = {}
             action = {"fwd": ["umbrella-edge"]}
-            self.fm_builder.add_flow_mod("insert", rule_type, DEFAULT_PRIORITY, match, action, self.config.dpid_2_name[edge]) 
+            print "dpid_2_name-edge: %s" % self.config.dpid_2_name[edge]
+            print "datapaths: %s" % self.config.datapaths
+            self.fm_builder.add_flow_mod("insert", rule_type, 200, match, action, self.config.dpid_2_name[edge]) 
 
     def start(self):
         self.logger.info('start')
