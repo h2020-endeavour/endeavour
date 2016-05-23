@@ -36,8 +36,6 @@ class IP_LBalancer(Load_Balancer):
         super(IP_LBalancer, self).__init__()
 
 
-
-
     def lb_policy(self, edge_core):
         for edge in edge_core:
             print "edge_core: %s" % edge_core
@@ -48,21 +46,3 @@ class IP_LBalancer(Load_Balancer):
     def lb_action(self, edge):
         return self.edge_out_ports[edge]
 
-
-    def generate_load_balancing_matches(self, config):
-
-        datapaths = config.datapaths
-        cores = [datapaths[x] for x in datapaths if x.find("core") == 0]
-
-        metadata = []
-        for core in cores:
-            metadata.append(core.id)
-
-        # test matches, to be extended
-        match0 = (eth_type=0x0800, ipv4_src=('1.0.0.0', '192.0.0.0'))
-        match1 = (eth_type=0x0800, ipv4_src=('64.0.0.0', '192.0.0.0'))
-        match2 = (eth_type=0x0800, ipv4_src=('128.0.0.0', '192.0.0.0'))
-        match3 = (eth_type=0x0800, ipv4_src=('192.0.0.0', '192.0.0.0'))
-        matches = [match0, match1, match2, match3]
-
-        return matches, metadata

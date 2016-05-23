@@ -16,6 +16,7 @@ DEFAULT_PRIORITY = 1
 FORWARDING_PRIORITY = 4
 ARP_PRIORITY = 8
 ETH_TYPE_ARP = 0x0806
+ETH_TYPE_IP = 0x0800
 ETH_BROADCAST_MAC = "ff:ff:ff:ff:ff:ff"
 
 
@@ -135,12 +136,34 @@ class Umbrella(object):
 
                 self.fm_builder.add_flow_mod("insert", rule_type, FORWARDING_PRIORITY, match, action, self.config.dpid_2_name[core] )
 
+    def ip_match(self, net_id):
+        if net_id == 1:
+            ipv4_src=('1.0.0.0', '192.0.0.0')
+        elif net_id == 2:
+            ipv4_src=('64.0.0.0', '192.0.0.0'))
+        elif net_id == 3:
+            ipv4_src=('128.0.0.0', '192.0.0.0'))
+        else net_id == 4:
+            ipv4_src=('192.0.0.0', '192.0.0.0'))
+        match = {"eth_type": ETH_TYPE_IP, "ipv4_src": ETH_BROADCAST_MAC, "arp_tpa":arp_tpa}
+        return match
+
+    def generate_load_balancing_matches(self, cores):
+        matches = []
+        metadata = []
+        for core in cores:
+            matches.append(ip_match(core))
+            metadata.append(core.id)
+        return matches, metadata
+
     # Just send load balancer flows to umbrella. 
     def lbalancer_flow(self, rule_type):
         for edge in self.config.edge_core:
-            match = {}
-            action = {"fwd": ["umbrella-edge"]}
+            match = generate_load_balancing_matches(cores) # generate matches!
+            action = {"fwd": ["umbrella-edge"]} # make new action!! TODO
+
             #print "dpid_2_name-edge: %s" % self.config.dpid_2_name[edge] #only name
+            # debug information
             print "edges: %s" % self.config.edges
             print "cores: %s" % self.config.cores
             print "edge: %s" % edge
