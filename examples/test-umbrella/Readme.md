@@ -5,6 +5,14 @@ The test-umbrella scenario has been wrapped in a launch.sh shell script.
 The tests from the setup are the same from the Multiple table with
 a single switch scenario.
 
+Before starting the tests, make sure to checkout the branch mh-ctrl in the 
+iSDX repository of endeavour.
+
+```bash
+$ cd ~/iSDX
+$ git checkout mh-ctrl
+```bash
+
 ### Log Server
 ```bash
 $ cd ~
