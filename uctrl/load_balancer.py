@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import random
-from ryu.ofproto import parser
 
 # Not supposed to be something dynamic, for now.
 class Load_Balancer(object):
