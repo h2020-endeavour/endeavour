@@ -55,6 +55,7 @@ class Config(object):
             if "fabric options" in config["RefMon Settings"]:
                 datapaths = config["RefMon Settings"]["fabric options"]["dpids"]
                 self.edges = {x:datapaths[x] for x in datapaths if x.find('edge') == 0}
+                edges = {x:datapaths[x] for x in datapaths if x.find('edge') == 0}
                 cores = {x:datapaths[x] for x in datapaths if x.find('core') == 0}
 
             if "dpids" in config["RefMon Settings"]["fabric options"]:
