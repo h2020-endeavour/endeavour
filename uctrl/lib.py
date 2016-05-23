@@ -41,7 +41,7 @@ class Config(object):
 
         if "Route Server" in config:
             route_server = config["Route Server"]
-            self.route_server = RS(route_server['Port'], route_server["MAC"], route_server["IP"], route_server["switch"], route_server["ASN"])
+            self.route_server = Port(route_server['Port'], route_server["MAC"], route_server["IP"], route_server["switch"])
 
         if "ARP Proxy" in config:
             arp_proxy = config["ARP Proxy"]
@@ -98,7 +98,6 @@ class Config(object):
                             dpid = self.dpids[dp]
                             self.edge_peers[dpid][port] = ports[i]
                             i += 1
-                            #print self.edge_peers
 
     # Builds a list with:
     # edge dp id - core dp id -> port
