@@ -5,12 +5,11 @@ from mininet.net import Mininet
 from mininet.cli import CLI
 from mininet.log import setLogLevel, info
 from mininet.node import RemoteController, OVSSwitch, Node
-from sdnip import BgpRouter, SdnipHost, RouteServer
+from sdnip import BgpRouter, SdnipHost
 
 ROUTE_SERVER_IP = '172.0.255.254'
 ROUTE_SERVER_ASN = 65000
 
-peers = [{'address': "172.0.0.1", 'as': "100"}, {'address': "172.0.0.11", 'as': "200"}, {'address': "172.0.0.21", 'as': "300"}, {'address': "172.0.0.22", 'as': "300"}]
 
 class SDXTopo( Topo ):
     def __init__( self, *args, **kwargs ):
@@ -23,7 +22,7 @@ class SDXTopo( Topo ):
         # IXP fabric
         # edge switches
         edge_switches = []
-        for i in range(1, 5):
+        for i in range(1, 4):
             edge_switches.append(self.addSwitch(
                 'edge%s' % i, dpid='000000000000000%s' % i))
 
@@ -38,15 +37,20 @@ class SDXTopo( Topo ):
             for core_switch in core_switches:
                 self.addLink(edge_switch, core_switch)
 
+
+        # connect arp switch to edge 0 port 6       
+        # arp_switch = self.addSwitch( 's2' , dpid='1000000000000000')
+        # self.addLink(edge_switches[0], arp_switch, 6, 1)
+
         # connect route server to edge 0 port 6
-        # route_server = self.addHost('x1', ip = '172.0.255.254/16', mac='08:00:27:89:3b:ff', inNamespace = False)
-        self.addRouteServer(fabric=edge_switches[0],
-                            name='x1',
-                            port=6,
-                            mac='08:00:27:89:3b:ff',
-                            ip='172.0.255.254/16',
-                            neighbors=peers,
-                            asn=65000)
+        route_server = self.addHost('x1', ip = '172.0.255.254/16', mac='08:00:27:89:3b:ff', inNamespace = False)
+        self.addLink(edge_switches[0], route_server, 6)
+        
+        # Add node for ARP Proxy"
+        arp_proxy = self.addHost('x2', ip = '172.0.255.253/16', mac='08:00:27:89:33:ff', inNamespace = False)
+        self.addLink(edge_switches[0], arp_proxy, 7)
+        
+
 
         # Add Participants to the IXP 
         # Connects one participant to one of the four edge switches
@@ -65,7 +69,7 @@ class SDXTopo( Topo ):
                             port=5,
                             mac='08:00:27:92:18:1f',
                             ip='172.0.0.11/16',
-                            networks=['120.0.0.0/24', '130.0.0.0/24'],
+                            networks=['140.0.0.0/24', '150.0.0.0/24'],
                             asn=200)
         
         self.addParticipant(fabric=edge_switches[2],
@@ -76,33 +80,21 @@ class SDXTopo( Topo ):
                             networks=['140.0.0.0/24', '150.0.0.0/24'],
                             asn=300)
         
-        self.addParticipant(fabric=edge_switches[3],
+        self.addParticipant(fabric=edge_switches[2],
                             name='c2',
-                            port=5,
+                            port=6,
                             mac='08:00:27:bd:f8:b2',
                             ip='172.0.0.22/16',
-                            networks=['160.0.0.0/24', '170.0.0.0/24'],
+                            networks=['140.0.0.0/24', '150.0.0.0/24'],
                             asn=300)
 
-    def addRouteServer(self,fabric,name,port,mac,ip,neighbors,asn):
-        # Adds the interface to connect the router to the peers
-        rseth0 = [{'mac': mac, 'ipAddrs': [ip]}]
-        intfs = {name+'-eth0': rseth0}
 
-        rs = self.addHost(name,
-                            intfDict=intfs,
-                            asNum=asn,
-                            neighbors=neighbors,
-                            cls=RouteServer)
-        self.addLink(fabric, rs, port)
 
+           
     def addParticipant(self,fabric,name,port,mac,ip,networks,asn):
         # Adds the interface to connect the router to the Route server
         peereth0 = [{'mac': mac, 'ipAddrs': [ip]}]
         intfs = {name+'-eth0': peereth0}
-
-        # Set up the peer router
-        neighbors = [ {'address': ROUTE_SERVER_IP, 'as': ROUTE_SERVER_ASN}]
 
         # Adds 1 gateway interface for each network connected to the router
         for net in networks:
