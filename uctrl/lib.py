@@ -22,6 +22,7 @@ class Config(object):
         self.dpids = {}
         self.dpid_2_name = {}
         self.core_edge = {}
+        self.edges = {}
         self.edge_peers = {}
         self.edge_to_edge = {}
         self.edge_core = {}
