@@ -145,7 +145,7 @@ class Umbrella(object):
             ipv4_src=('128.0.0.0', '192.0.0.0'))
         else net_id == 4:
             ipv4_src=('192.0.0.0', '192.0.0.0'))
-        match = {"eth_type": ETH_TYPE_IP, "ipv4_src": ETH_BROADCAST_MAC, "arp_tpa":arp_tpa}
+        match = {"eth_type": ETH_TYPE_IP, "ipv4_src": ipv4_src}
         return match
 
     def generate_load_balancing_matches(self, cores):
