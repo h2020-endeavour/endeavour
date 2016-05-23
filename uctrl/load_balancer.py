@@ -59,10 +59,10 @@ class IP_LBalancer(Load_Balancer):
             metadata.append(core.id)
 
         # test matches, to be extended
-        match0 = parser.OFPMatch(eth_type=0x0800, ipv4_src=('1.0.0.0', '192.0.0.0'))
-        match1 = parser.OFPMatch(eth_type=0x0800, ipv4_src=('64.0.0.0', '192.0.0.0'))
-        match2 = parser.OFPMatch(eth_type=0x0800, ipv4_src=('128.0.0.0', '192.0.0.0'))
-        match3 = parser.OFPMatch(eth_type=0x0800, ipv4_src=('192.0.0.0', '192.0.0.0'))
+        match0 = (eth_type=0x0800, ipv4_src=('1.0.0.0', '192.0.0.0'))
+        match1 = (eth_type=0x0800, ipv4_src=('64.0.0.0', '192.0.0.0'))
+        match2 = (eth_type=0x0800, ipv4_src=('128.0.0.0', '192.0.0.0'))
+        match3 = (eth_type=0x0800, ipv4_src=('192.0.0.0', '192.0.0.0'))
         matches = [match0, match1, match2, match3]
 
         return matches, metadata
