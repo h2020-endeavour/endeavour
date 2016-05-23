@@ -17,7 +17,7 @@ from xctrl.flowmodmsg import FlowModMsgBuilder
 from xctrl.client import RefMonClient # Socket
 from umbrella import Umbrella
 from lib import Config
-from load_balancer import Dummy_LBalancer
+from load_balancer import IP_LBalancer
 
 
 def main():
@@ -29,6 +29,7 @@ def main():
     config_file = os.path.abspath(args.config)
 
     config = Config(config_file)
+    lbalancer = IP_LBalancer(config)
 
     # start umbrella fabric manager
     logger = util.log.getLogger('uctrl')
@@ -37,7 +38,7 @@ def main():
     logger.info('REFMON client: ' + str(config.refmon["IP"]) + ' ' + str(config.refmon["Port"]))
     client = RefMonClient(config.refmon["IP"], config.refmon["Port"], config.refmon["key"])
 
-    controller = Umbrella(config, client, logger, Dummy_LBalancer())
+    controller = Umbrella(config, client, logger, lbalancer)
     logger.info('start')
     controller.start()
 

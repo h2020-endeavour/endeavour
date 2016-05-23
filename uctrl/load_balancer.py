@@ -30,7 +30,7 @@ class Dummy_LBalancer(Load_Balancer):
 
 
 
-class IP_LBalancer(Load_Balancer):
+class IP_LBalancer(Load_Balancer, config):
     def __init__(self):
         super(Dummy_LBalancer, self).__init__()
 
