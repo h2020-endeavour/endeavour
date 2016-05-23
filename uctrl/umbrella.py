@@ -143,6 +143,7 @@ class Umbrella(object):
             #print "dpid_2_name-edge: %s" % self.config.dpid_2_name[edge] #only name
             print "edges: %s" % self.config.edges
             print "cores: %s" % self.config.cores
+            print "edge: %s" % edge
             self.fm_builder.add_flow_mod("insert", rule_type, 200, match, action, self.config.dpid_2_name[edge]) 
 
     def start(self):
