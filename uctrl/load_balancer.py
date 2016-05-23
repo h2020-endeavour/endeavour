@@ -30,9 +30,9 @@ class Dummy_LBalancer(Load_Balancer):
 
 
 
-class IP_LBalancer(Load_Balancer, config):
-    def __init__(self):
-        super(Dummy_LBalancer, self).__init__()
+class IP_LBalancer(Load_Balancer):
+    def __init__(self, config):
+        super(IP_LBalancer, self).__init__()
 
     def lb_policy(self, edge_core):
         for edge in edge_core:
