@@ -154,9 +154,11 @@ class Umbrella(object):
     def generate_load_balancing_matches(self, cores):
         matches = []
         metadata = []
+        print "cores(iplbalance): %s" % cores
         for core in cores:
             matches.append(self.ip_match(core))
-            metadata.append(core.id)
+            print "core(iplbalance): %s" % core
+            #metadata.append(core.id)
         return matches, metadata
 
     # Just send load balancer flows to umbrella. 
