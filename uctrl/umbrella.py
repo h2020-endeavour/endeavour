@@ -136,14 +136,14 @@ class Umbrella(object):
 
                 self.fm_builder.add_flow_mod("insert", rule_type, FORWARDING_PRIORITY, match, action, self.config.dpid_2_name[core] )
 
-    def ip_match(self, net_id):
-        if net_id == 16:
+    def ip_match(self, core_id):
+        if core_id == 16:
             ipv4_src=('1.0.0.0', '192.0.0.0')
-        elif net_id == 32:
+        elif core_id == 32:
             ipv4_src=('64.0.0.0', '192.0.0.0')
-        elif net_id == 48:
+        elif core_id == 48:
             ipv4_src=('128.0.0.0', '192.0.0.0')
-        elif net_id == 64:
+        elif core_id == 64:
             ipv4_src=('192.0.0.0', '192.0.0.0')
         else:
             ipv4_src=('1.0.0.0', '0.0.0.0')
@@ -153,30 +153,30 @@ class Umbrella(object):
         match = {"eth_type": ETH_TYPE_IP, "eth_dst": ETH_BROADCAST_MAC}
         return match
 
-    # Make this global? TODO!
-    def generate_load_balancing_matches(self, cores):
-        matches = []
-        metadata = []
-        print "cores(iplbalance): %s" % cores
-        for core in cores:
-            matches.append(self.ip_match(cores[core]))
-            #print "core(iplbalance): %s" % cores[core]
-            #metadata.append(core.id)
-        return matches#, metadata
-
     # Just send load balancer flows to umbrella. 
     def lbalancer_flow(self, rule_type):
         for edge in self.config.edge_core:
             match = self.generate_load_balancing_matches(self.config.cores) # generate matches!
             
-            out_port = self.config.core_edge[core][edge]
-            action = {"fwd": [out_port]} # make new action!! TODO
-
             #print "dpid_2_name-edge: %s" % self.config.dpid_2_name[edge] #only name
             # debug information
             print "edges: %s" % self.config.edges
             print "cores: %s" % self.config.cores
             print "edge: %s" % edge
+
+
+            matches = []
+            metadata = []
+
+            for core in cores:
+                matches.append(self.ip_match(cores[core]))
+
+                out_port = self.config.core_edge[core][edge]
+                action = {"fwd": [out_port]} # make new action!! TODO
+                print "out_port: %s" : % out_port
+            #print "core(iplbalance): %s" % cores[core]
+            #metadata.append(core.id)
+
             self.fm_builder.add_flow_mod("insert", rule_type, 200, match, action, self.config.dpid_2_name[edge]) 
 
 
@@ -187,6 +187,7 @@ class Umbrella(object):
         self.handle_ingress_l2("umbrella-edge")
         self.handle_core_switches("umbrella-core")
         self.handle_egress("umbrella-edge")
-        self.lbalancer_flow("load-balancer")
+        #self.lbalancer_flow("load-balancer")
+        self.lbalancer_flow("umbrella-edge")
         self.sender.send(self.fm_builder.get_msg())
         self.logger.info('sent flow mods to reference monitor')
