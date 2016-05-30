@@ -167,7 +167,7 @@ class Umbrella(object):
 
             metadata = []
 
-            for core in cores:
+            for core in self.config.cores:
                 match = self.ip_match(cores[core])
 
                 out_port = self.config.core_edge[core][edge]
