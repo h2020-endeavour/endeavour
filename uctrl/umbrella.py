@@ -181,7 +181,7 @@ class Umbrella(object):
 
                 action_meta = {"meta": [metadata]} # make new action!! TODO
                 
-                instructions = [action_meta, action_fwd]
+                instructions = { action_fwd, action_meta }
                 print "out_port: %s" % out_port
                 self.fm_builder.add_flow_mod("insert", rule_type, 200, match, instructions, self.config.dpid_2_name[edge]) 
             #print "core(iplbalance): %s" % cores[core]
