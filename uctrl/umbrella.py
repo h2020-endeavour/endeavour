@@ -168,17 +168,18 @@ class Umbrella(object):
             metadata = []
 
             for core in self.config.cores:
-                match = self.ip_match(self.config.cores[core])
-
-                out_port = self.config.core_edge[core][edge]
+                core_id = self.config.cores[core]
+                
+                match = self.ip_match(core_id)
+                
+                out_port = self.config.core_edge[core_id][edge]
                 action = {"fwd": [out_port]} # make new action!! TODO
+                
                 print "out_port: %s" % out_port
+                
                 self.fm_builder.add_flow_mod("insert", rule_type, 200, match, action, self.config.dpid_2_name[edge]) 
             #print "core(iplbalance): %s" % cores[core]
             #metadata.append(core.id)
-
-           
-
 
 
     def start(self):
