@@ -168,7 +168,7 @@ class Umbrella(object):
             metadata = []
 
             for core in self.config.cores:
-                match = self.ip_match(cores[core])
+                match = self.ip_match(self.config.cores[core])
 
                 out_port = self.config.core_edge[core][edge]
                 action = {"fwd": [out_port]} # make new action!! TODO
