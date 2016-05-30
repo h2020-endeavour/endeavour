@@ -137,6 +137,7 @@ class Umbrella(object):
                 self.fm_builder.add_flow_mod("insert", rule_type, FORWARDING_PRIORITY, match, action, self.config.dpid_2_name[core] )
 
     def ip_match(self, core_id):
+        metadata = core_id
         if core_id == 16:
             ipv4_src=('1.0.0.0', '192.0.0.0')
         elif core_id == 32:
@@ -151,7 +152,7 @@ class Umbrella(object):
 
         #working example
         #match = {"eth_type": ETH_TYPE_IP, "eth_dst": ETH_BROADCAST_MAC}
-        return match
+        return match, metadata
 
     # Just send load balancer flows to umbrella. 
     def lbalancer_flow(self, rule_type):
@@ -164,22 +165,26 @@ class Umbrella(object):
             print "cores: %s" % self.config.cores
             print "edge: %s" % edge
 
-
-            metadata = []
-
             for core in self.config.cores:
                 core_id = self.config.cores[core]
                 
-                match = self.ip_match(core_id)
-                
+                match, metadata = self.ip_match(core_id)
+                metadata_instructions = (core_id, 0xffffffff)
+
+                #umbrella_edge_table = tables["umbrella-edge"]
+                #goto_instruction = config.parser.OFPInstructionGotoTable(umbrella_edge_table)
+
                 print "core_id: %s and edge: %s" % (core_id, edge)
 
+                
+                #ACTION did not work!! for edge 1 always port 1 and so on...........
                 out_port = self.config.core_edge[core_id][edge]
                 action = {"fwd": [out_port]} # make new action!! TODO
+                instructions = [metadata_instructions, action]
                 
                 print "out_port: %s" % out_port
                 
-                self.fm_builder.add_flow_mod("insert", rule_type, 200, match, action, self.config.dpid_2_name[edge]) 
+                self.fm_builder.add_flow_mod("insert", rule_type, 200, match, instructions, self.config.dpid_2_name[edge]) 
             #print "core(iplbalance): %s" % cores[core]
             #metadata.append(core.id)
 
@@ -192,7 +197,7 @@ class Umbrella(object):
         self.handle_ingress_l2("umbrella-edge")
         self.handle_core_switches("umbrella-core")
         self.handle_egress("umbrella-edge")
-        #self.lbalancer_flow("load-balancer")
-        self.lbalancer_flow("umbrella-edge")
+        self.lbalancer_flow("load-balancer")
+        #self.lbalancer_flow("umbrella-edge")
         self.sender.send(self.fm_builder.get_msg())
         self.logger.info('sent flow mods to reference monitor')
