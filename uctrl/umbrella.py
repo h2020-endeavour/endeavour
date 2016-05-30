@@ -147,6 +147,7 @@ class Umbrella(object):
             ipv4_src=('192.0.0.0', '192.0.0.0')
         else:
             ipv4_src=('1.0.0.0', '0.0.0.0')
+            print "chose 1.0.0.0 as ip"
         match = {"eth_type": ETH_TYPE_IP, "ipv4_src": ipv4_src}
         return match
 
@@ -157,7 +158,7 @@ class Umbrella(object):
         print "cores(iplbalance): %s" % cores
         for core in cores:
             matches.append(self.ip_match(core))
-            print "core(iplbalance): %s" % core
+            print "core(iplbalance): %s" % cores[core]
             #metadata.append(core.id)
         return matches, metadata
 
