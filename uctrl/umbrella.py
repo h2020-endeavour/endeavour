@@ -147,10 +147,10 @@ class Umbrella(object):
             ipv4_src=('192.0.0.0', '192.0.0.0')
         else:
             ipv4_src=('1.0.0.0', '0.0.0.0')
-        #match = {"eth_type": ETH_TYPE_IP, "ipv4_src": ipv4_src}
+        match = {"eth_type": ETH_TYPE_IP, "ipv4_src": ipv4_src}
 
-        # arp example
-        match = {"eth_type": ETH_TYPE_IP, "eth_dst": ETH_BROADCAST_MAC}
+        #working example
+        #match = {"eth_type": ETH_TYPE_IP, "eth_dst": ETH_BROADCAST_MAC}
         return match
 
     # Just send load balancer flows to umbrella. 
@@ -182,6 +182,8 @@ class Umbrella(object):
                 self.fm_builder.add_flow_mod("insert", rule_type, 200, match, action, self.config.dpid_2_name[edge]) 
             #print "core(iplbalance): %s" % cores[core]
             #metadata.append(core.id)
+
+            print "fm_builder(): %s" % self.fm_builder.get_msg()
 
 
     def start(self):
