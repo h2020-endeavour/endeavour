@@ -150,8 +150,7 @@ class Umbrella(object):
         #match = {"eth_type": ETH_TYPE_IP, "ipv4_src": ipv4_src}
 
         # arp example
-        match = {"eth_type": ETH_TYPE_ARP, "eth_dst": ETH_BROADCAST_MAC}
-
+        match = {"eth_type": ETH_TYPE_IP, "eth_dst": ETH_BROADCAST_MAC}
         return match
 
     # Make this global? TODO!
@@ -169,7 +168,9 @@ class Umbrella(object):
     def lbalancer_flow(self, rule_type):
         for edge in self.config.edge_core:
             match = self.generate_load_balancing_matches(self.config.cores) # generate matches!
-            action = {"fwd": ["umbrella-edge"]} # make new action!! TODO
+            
+            out_port = self.config.core_edge[core][edge]
+            action = {"fwd": [out_port]} # make new action!! TODO
 
             #print "dpid_2_name-edge: %s" % self.config.dpid_2_name[edge] #only name
             # debug information
