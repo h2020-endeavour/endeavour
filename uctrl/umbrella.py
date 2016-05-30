@@ -169,26 +169,25 @@ class Umbrella(object):
                 core_id = self.config.cores[core]
                 
                 match, metadata = self.ip_match(core_id)
-                metadata_instructions = (core_id, 0xffffffff)
 
                 #umbrella_edge_table = tables["umbrella-edge"]
                 #goto_instruction = config.parser.OFPInstructionGotoTable(umbrella_edge_table)
 
                 print "core_id: %s and edge: %s" % (core_id, edge)
 
-                
                 #ACTION did not work!! for edge 1 always port 1 and so on...........
                 out_port = self.config.core_edge[core_id][edge]
-                action = {"fwd": [out_port]} # make new action!! TODO
-                instructions = [metadata_instructions, action]
+                action_fwd = {"fwd": [out_port]} # make new action!! TODO
+
+                action_meta = {"meta": [metadata]} # make new action!! TODO
                 
+                instructions = [action_meta, action_fwd]
                 print "out_port: %s" % out_port
-                
                 self.fm_builder.add_flow_mod("insert", rule_type, 200, match, instructions, self.config.dpid_2_name[edge]) 
             #print "core(iplbalance): %s" % cores[core]
             #metadata.append(core.id)
 
-            print "fm_builder(): %s" % self.fm_builder.get_msg()
+            #print "fm_builder(): %s" % self.fm_builder.get_msg()
 
 
     def start(self):
