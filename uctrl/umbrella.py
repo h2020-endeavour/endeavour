@@ -174,15 +174,15 @@ class Umbrella(object):
                 #goto_instruction = config.parser.OFPInstructionGotoTable(umbrella_edge_table)
 
                 print "core_id: %s and edge: %s" % (core_id, edge)
-                instructions = []
+                #instructions = []
                 #ACTION did not work!! for edge 1 always port 1 and so on...........
                 out_port = self.config.core_edge[core_id][edge]
-                action_fwd = {"fwd": [out_port]} # make new action!! TODO
+                instructions = {"fwd": [out_port], "meta": [metadata]} # make new action!! TODO
 
-                action_meta = {"meta": [metadata]} # make new action!! TODO
+                #action_meta = {"meta": [metadata]} # make new action!! TODO
                 
-                instructions.append(action_fwd)
-                instructions.append(action_meta)
+                #instructions.append(action_fwd)
+                #instructions.append(action_meta)
 
                 print "out_port: %s" % out_port
                 self.fm_builder.add_flow_mod("insert", rule_type, 200, match, instructions, self.config.dpid_2_name[edge]) 
