@@ -183,7 +183,7 @@ class Umbrella(object):
                 
                 instructions = [ action_fwd, action_meta ]
                 print "out_port: %s" % out_port
-                self.fm_builder.add_flow_mod("insert", rule_type, 200, match, instructions, self.config.dpid_2_name[edge]) 
+                self.fm_builder.add_flow_mod("insert", rule_type, 200, match, action_meta, self.config.dpid_2_name[edge]) 
             #print "core(iplbalance): %s" % cores[core]
             #metadata.append(core.id)
 
