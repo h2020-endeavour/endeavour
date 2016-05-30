@@ -147,8 +147,11 @@ class Umbrella(object):
             ipv4_src=('192.0.0.0', '192.0.0.0')
         else:
             ipv4_src=('1.0.0.0', '0.0.0.0')
-            print "!!!chose 1.0.0.0 as ip"
         match = {"eth_type": ETH_TYPE_IP, "ipv4_src": ipv4_src}
+
+        # arp example
+        #match = {"eth_type": ETH_TYPE_ARP, "eth_dst": ETH_BROADCAST_MAC, "arp_tpa":arp_tpa}
+
         return match
 
     # Make this global? TODO!
@@ -160,7 +163,7 @@ class Umbrella(object):
             matches.append(self.ip_match(cores[core]))
             #print "core(iplbalance): %s" % cores[core]
             #metadata.append(core.id)
-        return matches, metadata
+        return matches#, metadata
 
     # Just send load balancer flows to umbrella. 
     def lbalancer_flow(self, rule_type):
