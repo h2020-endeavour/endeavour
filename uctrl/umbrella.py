@@ -172,6 +172,8 @@ class Umbrella(object):
                 
                 match = self.ip_match(core_id)
                 
+                print "core_id: %s and edge: %s" % core_id, edge 
+
                 out_port = self.config.core_edge[core_id][edge]
                 action = {"fwd": [out_port]} # make new action!! TODO
                 
