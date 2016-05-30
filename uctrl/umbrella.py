@@ -173,7 +173,7 @@ class Umbrella(object):
 
                 out_port = self.config.core_edge[core][edge]
                 action = {"fwd": [out_port]} # make new action!! TODO
-                print "out_port: %s" : % out_port
+                print "out_port: %s" % out_port
             #print "core(iplbalance): %s" % cores[core]
             #metadata.append(core.id)
 
