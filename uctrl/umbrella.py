@@ -155,7 +155,7 @@ class Umbrella(object):
         matches = []
         metadata = []
         for core in cores:
-            matches.append(ip_match(core))
+            matches.append(self.ip_match(core))
             metadata.append(core.id)
         return matches, metadata
 
