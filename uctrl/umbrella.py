@@ -181,7 +181,8 @@ class Umbrella(object):
 
                 action_meta = {"meta": [metadata]} # make new action!! TODO
                 
-                instructions.append(action_fwd, action_meta)
+                instructions.append(action_fwd)
+                instructions.append(action_meta)
 
                 print "out_port: %s" % out_port
                 self.fm_builder.add_flow_mod("insert", rule_type, 200, match, instructions, self.config.dpid_2_name[edge]) 
