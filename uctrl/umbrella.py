@@ -162,7 +162,7 @@ class Umbrella(object):
     # Just send load balancer flows to umbrella. 
     def lbalancer_flow(self, rule_type):
         for edge in self.config.edge_core:
-            match = self.generate_load_balancing_matches(cores) # generate matches!
+            match = self.generate_load_balancing_matches(self.config.cores) # generate matches!
             action = {"fwd": ["umbrella-edge"]} # make new action!! TODO
 
             #print "dpid_2_name-edge: %s" % self.config.dpid_2_name[edge] #only name
