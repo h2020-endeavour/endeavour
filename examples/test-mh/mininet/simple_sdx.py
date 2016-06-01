@@ -55,13 +55,13 @@ class SDXTopo(Topo):
 
         # connect route server to edge 0 port 7
         route_server = self.addHost('x1', ip=self.config.route_server.ip, mac=self.config.route_server.mac, inNamespace=False)
-        self.addLink(edge_switches[0], route_server, 7)
+        self.addLink(edge_switches[0], route_server, 6)
 
 
 
         # Add node for ARP Proxy"
         arp_proxy = self.addHost('x2', ip=self.config.arp_proxy.ip, mac=self.config.arp_proxy.mac, inNamespace=False)
-        self.addLink(arp_switch, arp_proxy, 2)
+        self.addLink(edge_switches[0], arp_proxy, 7)
 
         # Add Participants to the IXP
         # Connects one participant to one of the four edge switches
