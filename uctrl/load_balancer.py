@@ -29,7 +29,6 @@ class Dummy_LBalancer(Load_Balancer):
         return self.edge_out_ports[edge]
 
 
-
 class IP_LBalancer(Load_Balancer):
     def __init__(self, config):
         super(IP_LBalancer, self).__init__()
@@ -37,7 +36,6 @@ class IP_LBalancer(Load_Balancer):
 
     def lb_policy(self, edge_core):
         for edge in edge_core:
-            print "edge_core: %s" % edge_core
             self.edge_out_ports.setdefault(edge, {})
             core = random.choice([x for x in edge_core[edge]])
             self.edge_out_ports[edge] = (core, edge_core[edge][core])
