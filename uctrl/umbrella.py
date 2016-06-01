@@ -16,6 +16,7 @@ DEFAULT_PRIORITY = 1
 FORWARDING_PRIORITY = 4
 ARP_PRIORITY = 8
 LB_PRIORITY = 10
+METADATA_MASK = 0xffffffff
 ETH_TYPE_ARP = 0x0806
 ETH_TYPE_IP = 0x0800
 ETH_BROADCAST_MAC = "ff:ff:ff:ff:ff:ff"
@@ -138,7 +139,7 @@ class Umbrella(object):
                 self.fm_builder.add_flow_mod("insert", rule_type, FORWARDING_PRIORITY, match, action, self.config.dpid_2_name[core] )
 
     def ip_match(self, core_id):
-        metadata = [core_id]
+        metadata = [core_id, METADATA_MASK]
         if core_id == 16:
             ipv4_src=('1.0.0.0', '192.0.0.0')
         elif core_id == 32:
