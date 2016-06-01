@@ -177,7 +177,8 @@ class Umbrella(object):
         print "flow_mods: %s" % flow_mods
         for flow_mod in flow_mods:
             print "flow_mod: %s" % flow_mod
-            self.fm_builder.add_flow_mod(flow_mod)    
+            #self.fm_builder.add_flow_mod(flow_mod)
+            print "flow_mod[0]: %s" % flow_mod[0]    
 
     def start(self):
         self.logger.info('start')
