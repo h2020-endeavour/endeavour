@@ -171,7 +171,7 @@ class Umbrella(object):
                 self.fm_builder.add_flow_mod("insert", rule_type, LB_PRIORITY, match, instructions, self.config.dpid_2_name[edge]) 
 
     def handle_load_balancer(self, rule_type):
-        lbal.start(rule_type)
+        self.lbal.start(rule_type)
 
     def start(self):
         self.logger.info('start')
