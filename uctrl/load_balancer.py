@@ -33,7 +33,7 @@ class IP_LBalancer(Load_Balancer):
     def __init__(self, config):
         super(IP_LBalancer, self).__init__()
 
-    def ip_match(self, core_id, METADATA_MASK):
+    def ip_match(self, core_id, METADATA_MASK, ETH_TYPE_IP):
         metadata = [core_id, METADATA_MASK]
         if core_id == 16:
             ipv4_src=('1.0.0.0', '192.0.0.0')
@@ -52,7 +52,7 @@ class IP_LBalancer(Load_Balancer):
         return flow_mods
 
     # Just send load balancer flows to umbrella. 
-    def start(self, config, rule_type, LB_PRIORITY, METADATA_MASK):
+    def start(self, config, rule_type, LB_PRIORITY, METADATA_MASK, ETH_TYPE_IP):
         flow_mods = []
         # Rule for every Edge
         for edge in config.edge_core:
@@ -61,7 +61,7 @@ class IP_LBalancer(Load_Balancer):
             
                 # Decision for Match is core_id
                 core_id = config.cores[core]
-                match, metadata = self.ip_match(core_id, METADATA_MASK)
+                match, metadata = self.ip_match(core_id, METADATA_MASK, ETH_TYPE_IP)
 
                 # Build Instruction Meta-Information and Goto-Table
                 instructions = {"meta": metadata, "goto": 'umbrella-edge'}

@@ -171,7 +171,7 @@ class Umbrella(object):
                 self.fm_builder.add_flow_mod("insert", rule_type, LB_PRIORITY, match, instructions, self.config.dpid_2_name[edge]) 
 
     def handle_load_balancer(self, rule_type):
-        self.lbal.start(self.config, rule_type, LB_PRIORITY, METADATA_MASK)
+        self.lbal.start(self.config, rule_type, LB_PRIORITY, METADATA_MASK, ETH_TYPE_IP)
         flow_mods = []
         flow_mods = self.lbal.get_flow_mod()
         for flow_mod in flow_mods:
