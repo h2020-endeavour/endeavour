@@ -178,8 +178,8 @@ class Umbrella(object):
                 #ACTION did not work!! for edge 1 always port 1 and so on...........
                 out_port = self.config.core_edge[core_id][edge]
                 #instructions = {"meta": [metadata], "goto": 'umbrella-edge', "fwd": 'umbrella-core'} # make new action!! TODO
-                instructions = {"meta": [metadata], "goto": 'umbrella-edge'}
-
+                #instructions = {"meta": [metadata], "goto": 'umbrella-edge'}
+                instructions = {"meta": [metadata]}
                 #action_meta = {"meta": [metadata]} # make new action!! TODO
                 
                 #instructions.append(action_fwd)
