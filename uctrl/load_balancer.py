@@ -48,7 +48,7 @@ class IP_LBalancer(Load_Balancer):
         match = {"eth_type": ETH_TYPE_IP, "ipv4_src": ipv4_src}
         return match, metadata
 
-    def get_flow_mod():
+    def get_flow_mod(self):
         return flow_mods
 
     # Just send load balancer flows to umbrella. 
