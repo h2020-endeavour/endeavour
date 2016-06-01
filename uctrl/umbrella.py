@@ -179,7 +179,7 @@ class Umbrella(object):
                 out_port = self.config.core_edge[core_id][edge]
                 #instructions = {"meta": [metadata], "goto": 'umbrella-edge', "fwd": 'umbrella-core'} # make new action!! TODO
                 #instructions = {"meta": [metadata], "goto": 'umbrella-edge'}
-                instructions = {"meta": metadata}
+                instructions = {"meta": metadata, "goto": 'umbrella-edge'}
                 #action_meta = {"meta": [metadata]} # make new action!! TODO
                 
                 #instructions.append(action_fwd)
