@@ -174,7 +174,9 @@ class Umbrella(object):
         self.lbal.start(self.config, rule_type, LB_PRIORITY, METADATA_MASK, ETH_TYPE_IP)
         flow_mods = []
         flow_mods = self.lbal.get_flow_mod()
+        print "flow_mods: %s" % flow_mods
         for flow_mod in flow_mods:
+            print "flow_mod: %s" % flow_mod
             self.fm_builder.add_flow_mod(flow_mod)    
 
     def start(self):
