@@ -170,6 +170,8 @@ class Umbrella(object):
                 # Send for every Core to every Edge
                 self.fm_builder.add_flow_mod("insert", rule_type, LB_PRIORITY, match, instructions, self.config.dpid_2_name[edge]) 
 
+    def handle_load_balancer(self, rule_type):
+        lbal.start(rule_type)
 
     def start(self):
         self.logger.info('start')
@@ -177,6 +179,7 @@ class Umbrella(object):
         self.handle_ingress_l2("umbrella-edge")
         self.handle_core_switches("umbrella-core")
         self.handle_egress("umbrella-edge")
-        self.lbalancer_flow("load-balancer")
+        self.handle_load_balancer("load-balancer")
+        #self.lbalancer_flow("load-balancer")
         self.sender.send(self.fm_builder.get_msg())
         self.logger.info('sent flow mods to reference monitor')
