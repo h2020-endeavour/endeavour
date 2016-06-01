@@ -138,7 +138,7 @@ class Umbrella(object):
                 self.fm_builder.add_flow_mod("insert", rule_type, FORWARDING_PRIORITY, match, action, self.config.dpid_2_name[core] )
 
     def ip_match(self, core_id):
-        metadata = core_id
+        metadata = [core_id]
         if core_id == 16:
             ipv4_src=('1.0.0.0', '192.0.0.0')
         elif core_id == 32:
