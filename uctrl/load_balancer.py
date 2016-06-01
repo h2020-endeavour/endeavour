@@ -48,22 +48,27 @@ class IP_LBalancer(Load_Balancer):
         match = {"eth_type": ETH_TYPE_IP, "ipv4_src": ipv4_src}
         return match, metadata
 
+    def get_flow_mod():
+        return flow_mods
+
     # Just send load balancer flows to umbrella. 
-    def start(self, rule_type):
+    def start(self, config, rule_type, LB_PRIORITY):
+        flow_mods = []
         # Rule for every Edge
-        for edge in self.config.edge_core:
+        for edge in config.edge_core:
             # Rule to every Core
-            for core in self.config.cores:
+            for core in config.cores:
             
                 # Decision for Match is core_id
-                core_id = self.config.cores[core]
+                core_id = config.cores[core]
                 match, metadata = self.ip_match(core_id)
 
                 # Build Instruction Meta-Information and Goto-Table
                 instructions = {"meta": metadata, "goto": 'umbrella-edge'}
 
                 # Send for every Core to every Edge
-                self.fm_builder.add_flow_mod("insert", rule_type, LB_PRIORITY, match, instructions, self.config.dpid_2_name[edge]) 
+                flow_mods.append("insert", rule_type, LB_PRIORITY, match, instructions, self.config.dpid_2_name[edge]) 
+
 
     def lb_policy(self, edge_core):
         for edge in edge_core:
