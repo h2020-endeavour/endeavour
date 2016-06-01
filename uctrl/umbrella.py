@@ -15,6 +15,7 @@ from xctrl.flowmodmsg import FlowModMsgBuilder
 DEFAULT_PRIORITY = 1
 FORWARDING_PRIORITY = 4
 ARP_PRIORITY = 8
+LB_PRIORITY = 10
 ETH_TYPE_ARP = 0x0806
 ETH_TYPE_IP = 0x0800
 ETH_BROADCAST_MAC = "ff:ff:ff:ff:ff:ff"
@@ -149,48 +150,24 @@ class Umbrella(object):
         else:
             ipv4_src=('1.0.0.0', '0.0.0.0')
         match = {"eth_type": ETH_TYPE_IP, "ipv4_src": ipv4_src}
-
-        #working example
-        #match = {"eth_type": ETH_TYPE_IP, "eth_dst": ETH_BROADCAST_MAC}
         return match, metadata
 
     # Just send load balancer flows to umbrella. 
     def lbalancer_flow(self, rule_type):
+        # Rule for every Edge
         for edge in self.config.edge_core:
-            #match = self.generate_load_balancing_matches(self.config.cores) # generate matches!
-            
-            #print "dpid_2_name-edge: %s" % self.config.dpid_2_name[edge] #only name
-            # debug information
-            print "edges: %s" % self.config.edges
-            print "cores: %s" % self.config.cores
-            print "edge: %s" % edge
-
+            # Rule to every Core
             for core in self.config.cores:
-                
+            
+                # Decision for Match is core_id
                 core_id = self.config.cores[core]
                 match, metadata = self.ip_match(core_id)
 
-                #umbrella_edge_table = tables["umbrella-edge"]
-                #goto_instruction = config.parser.OFPInstructionGotoTable(umbrella_edge_table)
-
-                print "core_id: %s and edge: %s" % (core_id, edge)
-                #instructions = []
-                #ACTION did not work!! for edge 1 always port 1 and so on...........
-                out_port = self.config.core_edge[core_id][edge]
-                #instructions = {"meta": [metadata], "goto": 'umbrella-edge', "fwd": 'umbrella-core'} # make new action!! TODO
-                #instructions = {"meta": [metadata], "goto": 'umbrella-edge'}
+                # Build Instruction Meta-Information and Goto-Table
                 instructions = {"meta": metadata, "goto": 'umbrella-edge'}
-                #action_meta = {"meta": [metadata]} # make new action!! TODO
-                
-                #instructions.append(action_fwd)
-                #instructions.append(action_meta)
 
-                print "out_port: %s" % out_port
-                self.fm_builder.add_flow_mod("insert", rule_type, 200, match, instructions, self.config.dpid_2_name[edge]) 
-            #print "core(iplbalance): %s" % cores[core]
-            #metadata.append(core.id)
-
-            #print "fm_builder(): %s" % self.fm_builder.get_msg()
+                # Send for every Core to every Edge
+                self.fm_builder.add_flow_mod("insert", rule_type, LB_PRIORITY, match, instructions, self.config.dpid_2_name[edge]) 
 
 
     def start(self):
@@ -200,6 +177,5 @@ class Umbrella(object):
         self.handle_core_switches("umbrella-core")
         self.handle_egress("umbrella-edge")
         self.lbalancer_flow("load-balancer")
-        #self.lbalancer_flow("umbrella-edge")
         self.sender.send(self.fm_builder.get_msg())
         self.logger.info('sent flow mods to reference monitor')
