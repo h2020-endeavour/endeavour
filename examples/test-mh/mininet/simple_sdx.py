@@ -50,8 +50,8 @@ class SDXTopo(Topo):
                 self.addLink(edge_switch, core_switch)
 
         # connect arp switch to edge 0 port 6
-        arp_switch = self.addSwitch('s2', dpid=format(config.dpids['arp-switch'], '016x'))
-        self.addLink(edge_switches[0], arp_switch, 6, 1)
+        #arp_switch = self.addSwitch('s2', dpid=format(config.dpids['arp-switch'], '016x'))
+        #self.addLink(edge_switches[0], arp_switch, 6, 1)
 
         # connect route server to edge 0 port 7
         route_server = self.addHost('x1', ip=self.config.route_server.ip, mac=self.config.route_server.mac, inNamespace=False)
