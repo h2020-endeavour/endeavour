@@ -41,7 +41,7 @@ class Config(object):
 
         if "Route Server" in config:
             route_server = config["Route Server"]
-            self.route_server = Port(route_server['Port'], route_server["MAC"], route_server["IP"], route_server["switch"])
+            self.route_server = RS(route_server['Port'], route_server["MAC"], route_server["IP"], route_server["switch"], route_server['ASN'])
 
         if "ARP Proxy" in config:
             arp_proxy = config["ARP Proxy"]
