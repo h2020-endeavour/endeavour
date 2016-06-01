@@ -1,5 +1,13 @@
 #!/usr/bin/python
 
+import argparse
+import os
+import sys
+import json
+
+sys.path.append('/home/vagrant/endeavour/uctrl')
+from lib import Config
+
 from mininet.topo import Topo
 from mininet.net import Mininet
 from mininet.cli import CLI
@@ -7,13 +15,14 @@ from mininet.log import setLogLevel
 from mininet.node import RemoteController, OVSSwitch
 from sdnip import BgpRouter, SdnipHost
 
-ROUTE_SERVER_IP = '172.0.255.254'
-ROUTE_SERVER_ASN = 65000
+path_mininet_config = '/home/vagrant/endeavour/examples/test-de/mininet/mininet.cfg'
+
 
 
 class SDXTopo( Topo ):
-    def __init__( self, *args, **kwargs ):
+    def __init__( self, config, *args, **kwargs ):
         Topo.__init__( self, *args, **kwargs )
+        self.config = config
         # Describe Code
         # Set up data plane switch - this is the emulated router dataplane
         # Note: The controller needs to be configured with the specific driver that
@@ -33,40 +42,46 @@ class SDXTopo( Topo ):
         self.addLink(switch_3, switch_1, 50, 50)
 
 
+        participant_config = json.load(open(path_mininet_config, 'r'))
 
         # Add node for central Route Server"
-        route_server = self.addHost('rs1', ip = '172.0.255.254/24', mac='08:00:27:89:3b:ff', inNamespace = False)
-        self.addLink(switch_3, route_server, 48)
+        route_server = self.addHost('rs1', ip=self.config.route_server.ip, mac=self.config.route_server.mac, inNamespace = False)
+        self.addLink(switch_3, route_server, 48, 1)
 
         
         # Add Participants to the IXP (one for each edge switch)
-
+        name = 'a1'
         self.addParticipant(fabric=switch_1,
-                            name="a1",
-                            port=1,
-                            mac="3F:67:15:25:14:3C",
-                            ip="172.0.255.132/24",
-                            networks=["172.1.0.0/16", "172.2.0.0/16"],
-                            asn=100)
+                            name=name,
+                            port=participant_config[name]['port'],
+                            mac=participant_config[name]['mac'],
+                            ip=participant_config[name]['ip'],
+                            networks=participant_config[name]['networks'],
+                            asn=participant_config[name]['asn'])
 
+        name = 'b1'
         self.addParticipant(fabric=switch_2,
-                            name="b1",
-                            port=1,
-                            mac="55:22:61:94:47:CE",
-                            ip="172.0.255.210/24",
-                            networks=["172.9.25.0/24", "172.9.96.0/24"],
-                            asn=200)
+                            name=name,
+                            port=participant_config[name]['port'],
+                            mac=participant_config[name]['mac'],
+                            ip=participant_config[name]['ip'],
+                            networks=participant_config[name]['networks'],
+                            asn=participant_config[name]['asn'])
 
-        self.addParticipant(fabric=switch_3,
-                            name="c1",
-                            port=1,
-                            mac="58:14:5D:ED:55:81",
-                            ip="172.0.255.39/24",
-                            networks=["172.3.0.0/16", "172.4.0.0/16"],
-                            asn=300)
+        name = 'c1'
+        self.addParticipant(fabric=switch_1,
+                            name=name,
+                            port=participant_config[name]['port'],
+                            mac=participant_config[name]['mac'],
+                            ip=participant_config[name]['ip'],
+                            networks=participant_config[name]['networks'],
+                            asn=participant_config[name]['asn'])
+
 
     def addParticipant(self,fabric,name,port,mac,ip,networks,asn):
-        intfs = {}
+        # Adds the interface to connect the router to the Route server
+        peereth0 = [{'mac': mac, 'ipAddrs': [ip]}]
+        intfs = {name + '-eth0': peereth0}
 
         # Adds 1 gateway interface for each network connected to the router
         for net in networks:
@@ -75,7 +90,7 @@ class SDXTopo( Topo ):
             intfs[name + '-eth' + str(i)] = eth
             
         # Set up the peer router
-        neighbors = [{'address': ROUTE_SERVER_IP, 'as': ROUTE_SERVER_ASN}]
+        neighbors = [{'address': self.config.route_server.ip, 'as': self.config.route_server.asn}]
         peer = self.addHost(name,
                             intfDict=intfs,
                             asNum=asn,
@@ -107,7 +122,17 @@ def replace_ip(network, ip):
 
 if __name__ == "__main__":
     setLogLevel('info')
-    topo = SDXTopo()
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('config', help='path of config file')
+    args = parser.parse_args()
+
+    # locate config file
+    config_file = os.path.abspath(args.config)
+
+    config = Config(config_file)
+
+    topo = SDXTopo(config)
 
     net = Mininet(topo=topo, controller=RemoteController, switch=OVSSwitch)
 
@@ -116,3 +141,5 @@ if __name__ == "__main__":
     CLI(net)
 
     net.stop()
+
+    info("done\n")

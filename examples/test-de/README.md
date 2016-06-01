@@ -2,10 +2,8 @@
 
 ![Test Topology](https://raw.githubusercontent.com/h2020-endeavour/endeavour/master/examples/test-de/small_ixp_edge_topology.png)
 
+### Instructions to test the current code
 
-### Launch Mininet topology
+Open a terminal and run the test topology:
 
-```bash
-$ cd ~
-$ ./iSDX/launch.sh test-de 2
-```
+    $ sudo python ~/endeavour/examples/test-de/mininet/simple_sdx.py ~/endeavour/examples/test-de/config/sdx_global.cfg
