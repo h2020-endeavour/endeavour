@@ -14,9 +14,13 @@
 
 | Name                                  | Direct from iSDX\Umbrella | Monitoring dependant |                                                 Status                                                |
 |---------------------------------------|---------------------------|----------------------|:-----------------------------------------------------------------------------------------------------:|
-| Inbound/Outbound TE                   |            Yes            |          No          |               iSDX should give it automatically.  Needs to decide what examples to show.              |
+| Inbound/Outbound TE                   |            Yes            |          Yes*          |               iSDX should give it automatically.  Needs to decide what examples to show.              |
 | Control / Data Plane Consistency      |            Yes            |          No          |               Peering relations are known at the iSDX config.  Thus it is a direct case.              |
 | Advanced Blackholing                  |            Yes            |          Yes         | Blackholing policies can be applied using iSDX. Though, monitoring side still needs to be implemented |
 | Virtualized Private Peering           |             No            |          No          |                                              Not started                                              |
 | Control Plane Traffic Protection      |             No            |          No          |                                              Not started                                              |
 | Destination Port Congestion Awareness |             No            |          Yes         |                                              Not started                                              |
+
+*For dynamic Traffic Engineering monitoring will be required.
+For now, let's assume Inbound and Outbound TE to work as shown
+in the iSDX examples.
