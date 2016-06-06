@@ -16,7 +16,7 @@ from sdnip import BgpRouter, SdnipHost
 from lib import Config
 
 path_mininet_config = '/home/vagrant/endeavour/examples/test-mh/mininet/mininet.cfg'
-
+default_isdx_config = '/home/vagrant/endeavour/examples/test-mh/config/sdx_global.cfg'
 
 class SDXTopo(Topo):
 
@@ -152,7 +152,7 @@ if __name__ == "__main__":
     setLogLevel('info')
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('config', help='path of config file')
+    parser.add_argument('config', help='path of config file', nargs='?', default= default_isdx_config)
     args = parser.parse_args()
 
     # locate config file
