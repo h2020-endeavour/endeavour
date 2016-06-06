@@ -16,7 +16,7 @@ from sdnip import BgpRouter, SdnipHost
 from lib import Config
 
 path_mininet_config = '/home/vagrant/endeavour/examples/test-mh/mininet/mininet.cfg'
-
+default_isdx_config = '/home/vagrant/endeavour/examples/test-mh/config/sdx_global.cfg'
 
 class SDXTopo(Topo):
 
@@ -50,18 +50,18 @@ class SDXTopo(Topo):
                 self.addLink(edge_switch, core_switch)
 
         # connect arp switch to edge 0 port 6
-        arp_switch = self.addSwitch('s2', dpid=format(config.dpids['arp-switch'], '016x'))
-        self.addLink(edge_switches[0], arp_switch, 6, 1)
+        #arp_switch = self.addSwitch('s2', dpid=format(config.dpids['arp-switch'], '016x'))
+        #self.addLink(edge_switches[0], arp_switch, 6, 1)
 
         # connect route server to edge 0 port 7
         route_server = self.addHost('x1', ip=self.config.route_server.ip, mac=self.config.route_server.mac, inNamespace=False)
-        self.addLink(edge_switches[0], route_server, 7)
+        self.addLink(edge_switches[0], route_server, 6)
 
 
 
         # Add node for ARP Proxy"
         arp_proxy = self.addHost('x2', ip=self.config.arp_proxy.ip, mac=self.config.arp_proxy.mac, inNamespace=False)
-        self.addLink(arp_switch, arp_proxy, 2)
+        self.addLink(edge_switches[0], arp_proxy, 7)
 
         # Add Participants to the IXP
         # Connects one participant to one of the four edge switches
@@ -152,7 +152,7 @@ if __name__ == "__main__":
     setLogLevel('info')
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('config', help='path of config file')
+    parser.add_argument('config', help='path of config file', nargs='?', default= default_isdx_config)
     args = parser.parse_args()
 
     # locate config file

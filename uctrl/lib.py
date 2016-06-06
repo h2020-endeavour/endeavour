@@ -41,11 +41,12 @@ class Config(object):
 
         if "Route Server" in config:
             route_server = config["Route Server"]
-            self.route_server = Port(route_server['Port'], route_server["MAC"], route_server["IP"], route_server["switch"])
-
+            self.route_server = Port(route_server['Port'], route_server["MAC"], route_server["IP"], route_server["switch"], route_server["ASN"])
         if "ARP Proxy" in config:
             arp_proxy = config["ARP Proxy"]
-            self.arp_proxy = Port(arp_proxy['Port'], arp_proxy["MAC"], arp_proxy["IP"], arp_proxy["switch"])
+            # Arp proxy ASN does not make sense. It is here because
+            # I do not want another named tuple only for this case
+            self.arp_proxy = Port(arp_proxy['Port'], arp_proxy["MAC"], arp_proxy["IP"], arp_proxy["switch"], route_server["ASN"])
 
         if "Participants" in config:
             self.participants = config["Participants"]
@@ -94,7 +95,7 @@ class Config(object):
                 if p in self.participants:
                     for port in self.participants[p]["Ports"]:
                          if port["switch"] == dp:
-                            port = Port(port['Id'], port["MAC"], port["IP"], port["switch"])
+                            port = Port(port['Id'], port["MAC"], port["IP"], port["switch"], self.participants[p]["ASN"])
                             dpid = self.dpids[dp]
                             self.edge_peers[dpid][port] = ports[i]
                             i += 1
@@ -121,5 +122,4 @@ class Config(object):
             if dp in edges:
                 self.edge_to_edge[edge][dp] = dp_conns[dp]
  
-Port = namedtuple('Port', "id mac ip switch")
-RS = namedtuple('RS', "id mac ip switch asn")
+Port = namedtuple('Port', "id mac ip switch asn")
