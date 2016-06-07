@@ -16,7 +16,7 @@ DEFAULT_PRIORITY = 1
 FORWARDING_PRIORITY = 4
 ARP_PRIORITY = 8
 LB_PRIORITY = 10
-METADATA_MASK = 0xffffffff
+METADATA_MASK = 0xffffffffff
 ETH_TYPE_ARP = 0x0806
 ETH_TYPE_IP = 0x0800
 ETH_BROADCAST_MAC = "ff:ff:ff:ff:ff:ff"
@@ -45,14 +45,14 @@ class Umbrella(object):
         return mac
 
     def ARP_match(self, arp_tpa):
-         match = {"eth_type": ETH_TYPE_ARP, "eth_dst": ETH_BROADCAST_MAC, "arp_tpa":arp_tpa}
+        #"eth_dst": ETH_BROADCAST_MAC, 
+         match = {"eth_type": ETH_TYPE_ARP, "arp_tpa":arp_tpa}
          return match
 
     def l2_match(self, eth_dst):
         match = {"eth_dst":eth_dst}
         return match
 
-    #TODO: Add identification cookie of the flows
     def handle_ARP(self, rule_type):
         # peers are in the same edge
         for dp in self.config.edge_peers:
@@ -60,7 +60,7 @@ class Umbrella(object):
             for peer in peers:
                 out_port = peers[peer]
                 match = self.ARP_match(peer.ip)
-                action = {"fwd": [out_port]}
+                action = {"set_eth_dst":peer.mac, "fwd": [out_port]}
                 self.fm_builder.add_flow_mod("insert", rule_type, ARP_PRIORITY, match, action, self.config.dpid_2_name[dp])
 
         #TODO: peers are in different edges. Edges connected directly.
@@ -96,12 +96,16 @@ class Umbrella(object):
                     continue
                 else:
                     for host in hosts:
-                        core, out_port_to_core = self.lbal.lb_action(edge) 
-                        core_port_to_target = self.config.core_edge[core][target_dp]
-                        edge_port = self.config.edge_peers[target_dp][host]
-                        match = self.l2_match(host.mac)
-                        actions = {"set_eth_dst": self.create_umbrella_mac(core_port_to_target, edge_port), "fwd": [out_port_to_core]}
-                        self.fm_builder.add_flow_mod("insert", rule_type, FORWARDING_PRIORITY, match, actions, self.config.dpid_2_name[edge]) 
+                    # need to install one flow per core for the load balancing
+                    # TODO: find a better way to do it. It is too ugly now
+                        for core in self.config.core_edge:
+                            out_port_to_core = self.config.edge_core[edge][core] 
+                            core_port_to_target = self.config.core_edge[core][target_dp]
+                            edge_port = self.config.edge_peers[target_dp][host]
+                            match = self.l2_match(host.mac)
+                            match["metadata"] = core
+                            actions = {"set_eth_dst": self.create_umbrella_mac(core_port_to_target, edge_port), "fwd": [out_port_to_core]}
+                            self.fm_builder.add_flow_mod("insert", rule_type, FORWARDING_PRIORITY, match, actions, self.config.dpid_2_name[edge]) 
 
     def create_egress_match(self, edge_port):
         mac_2nd_byte = '{}'.format('0' + format(edge_port, 'x') if len(hex(edge_port)) == 3 else format(edge_port, 'x'))
@@ -176,7 +180,14 @@ class Umbrella(object):
 
                 # Send for every Core to every Edge
                 self.fm_builder.add_flow_mod("insert", rule_type, LB_PRIORITY, match, instructions, self.config.dpid_2_name[edge]) 
-
+            # Need to handle VNH MACS. 
+            # TODO: Add group to support fast failover.
+            match = {"eth_type": ETH_TYPE_ARP}
+            # Picking the last core from the last loop. Should be replaced 
+            # with a group later
+            metadata = [self.config.cores[core], METADATA_MASK] 
+            instructions = {"meta": metadata, "fwd": ["umbrella-edge"]}
+            self.fm_builder.add_flow_mod("insert", rule_type, LB_PRIORITY, match, instructions, self.config.dpid_2_name[edge]) 
 
     def start(self):
         self.logger.info('start')
