@@ -4,6 +4,11 @@ SDX_DIR=~/iSDX
 RIBS_DIR=$SDX_DIR/xrs/ribs
 session_name="endeavour"
 
+if [ $# -eq 0 ]; then
+  echo "No arguments supplied"
+    exit 1
+fi
+
 tmux new-session -d -s $session_name
 
 tmux new-window -t $session_name:1 -n 'logserver' "$RUN_DIR/launch.sh $1 1"
