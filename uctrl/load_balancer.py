@@ -32,43 +32,90 @@ class Dummy_LBalancer(Load_Balancer):
 class IP_LBalancer(Load_Balancer):
     def __init__(self, config):
         super(IP_LBalancer, self).__init__()
+        self.id_matcher = []
 
-    def ip_match(self, core_id, METADATA_MASK, ETH_TYPE_IP):
-        metadata = [core_id, METADATA_MASK]
-        if core_id == 16:
-            ipv4_src=('1.0.0.0', '192.0.0.0')
-        elif core_id == 32:
-            ipv4_src=('64.0.0.0', '192.0.0.0')
-        elif core_id == 48:
-            ipv4_src=('128.0.0.0', '192.0.0.0')
-        elif core_id == 64:
-            ipv4_src=('192.0.0.0', '192.0.0.0')
-        else:
-            ipv4_src=('1.0.0.0', '0.0.0.0')
-        match = {"eth_type": ETH_TYPE_IP, "ipv4_src": ipv4_src}
+    
+    def init(self, cores, match_bytes):
+        
+        
+        # fill bytearray with match
+        # string like '00000011' or
+        # int from 0 to 255
+        arr_bytes = bytearray(len(match_bytes))
+        for i in range(len(match_bytes)): 
+            val = match_bytes[i]
+            if isinstance(val, str):
+                arr_bytes[i] = int(val, 2)
+            elif isinstance(val,int):
+                arr_bytes[i] = val
+        #debug print
+        #for i in range(len(arr_bytes)):
+        #    print arr_bytes[i]
+
+
+        # set for every match
+        # [set([0]), set([0]), set([0]), set([0, 32, 64, 96])]
+        # match_bytes [0, 0, 0, "01100000"]
+        setarray = []
+        for i in range(len(arr_bytes)):
+            se = set([])
+            for j in range(0, 255):
+                se.add(arr_bytes[i] & j)
+            setarray.append(se)
+        #debug print
+        #for i in se:
+        #    print i
+        print ("setarray: %s ") % setarray
+
+
+        ##todo
+        # idea to build matches from the different bytes 
+        allset = set([])
+        for index, value in enumerate(setarray):
+            print(index, value)
+            if len(value) > 1:
+                setlist = list(value)
+        for set_elem in setlist:
+            var = (index+1-len(setlist))*256
+            if (var == 0): 
+                var=1
+            allset.add(set_elem * var)
+        #debug print
+        print ("allset: %s ") % allset
+
+
+
+
+        # link every core to a match
+        # works only for the 4. byte
+        for core in cores:
+            set_elem = setarray[3] # fix atm look only at byte 4
+            elem = set_elem.pop()
+            id_matcher.update({core:elem})
+        #debug print    
+        print ("id_matcher: %s ") % id_matcher
+
+
+        #debug print
+        for key, value in id_matcher.iteritems():
+            print ("key[%s] = %s " % (key, value))
+        print ("id_matcher[48]: %s ") % id_matcher[48]
+
+
+
+    def get_ip_match(self, match_id, count):
+        METADATA_MASK = 0xffffffff
+        metadata = [match_id, METADATA_MASK]
+        
+        if match_id in self.id_matcher:
+            #return decimal mask
+            mask = self.id_matcher[match_id]
+            #todo build match
+            match = {"eth_type": ETH_TYPE_IP, "ipv4_src": ipv4_src}
         return match, metadata
 
     def get_flow_mod(self):
         return self.flow_mods
-
-    # Just send load balancer flows to umbrella. 
-    def start(self, config, rule_type, LB_PRIORITY, METADATA_MASK, ETH_TYPE_IP):
-        self.flow_mods = []
-        # Rule for every Edge
-        for edge in config.edge_core:
-            # Rule to every Core
-            for core in config.cores:
-            
-                # Decision for Match is core_id
-                core_id = config.cores[core]
-                match, metadata = self.ip_match(core_id, METADATA_MASK, ETH_TYPE_IP)
-
-                # Build Instruction Meta-Information and Goto-Table
-                instructions = {"meta": metadata, "goto": 'umbrella-edge'}
-
-                # Send for every Core to every Edge
-                self.flow_mods.append(("insert", rule_type, LB_PRIORITY, match, instructions, config.dpid_2_name[edge])) 
-
 
     def lb_policy(self, edge_core):
         for edge in edge_core:

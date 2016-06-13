@@ -138,23 +138,12 @@ class Umbrella(object):
 
                 self.fm_builder.add_flow_mod("insert", rule_type, FORWARDING_PRIORITY, match, action, self.config.dpid_2_name[core] )
 
-    def ip_match(self, core_id):
-        metadata = [core_id, METADATA_MASK]
-        if core_id == 16:
-            ipv4_src=('1.0.0.0', '192.0.0.0')
-        elif core_id == 32:
-            ipv4_src=('64.0.0.0', '192.0.0.0')
-        elif core_id == 48:
-            ipv4_src=('128.0.0.0', '192.0.0.0')
-        elif core_id == 64:
-            ipv4_src=('192.0.0.0', '192.0.0.0')
-        else:
-            ipv4_src=('1.0.0.0', '0.0.0.0')
-        match = {"eth_type": ETH_TYPE_IP, "ipv4_src": ipv4_src}
-        return match, metadata
-
     # Just send load balancer flows to umbrella. 
-    def lbalancer_flow(self, rule_type):
+    def handle_load_balancer(self, rule_type):
+
+        match_bytes = ["00000000", "00000000", "000000000", "11110000"]
+        self.lbal.init(self.config.cores, match)
+
         # Rule for every Edge
         for edge in self.config.edge_core:
             # Rule to every Core
@@ -162,23 +151,14 @@ class Umbrella(object):
             
                 # Decision for Match is core_id
                 core_id = self.config.cores[core]
-                match, metadata = self.ip_match(core_id)
+                match, metadata = self.lbal.ip_match(core_id)
 
                 # Build Instruction Meta-Information and Goto-Table
-                instructions = {"meta": metadata, "goto": 'umbrella-edge'}
+                instructions = {"meta": metadata, "goto": ["umbrella-edge"]}
 
                 # Send for every Core to every Edge
                 self.fm_builder.add_flow_mod("insert", rule_type, LB_PRIORITY, match, instructions, self.config.dpid_2_name[edge]) 
 
-    def handle_load_balancer(self, rule_type):
-        self.lbal.start(self.config, rule_type, LB_PRIORITY, METADATA_MASK, ETH_TYPE_IP)
-        flow_mods = []
-        flow_mods = self.lbal.get_flow_mod()
-        print "flow_mods: %s" % flow_mods
-        for flow_mod in flow_mods:
-            print "flow_mod: %s" % flow_mod
-            #self.fm_builder.add_flow_mod(flow_mod)
-            print "flow_mod[0]: %s" % flow_mod[0]    
 
     def start(self):
         self.logger.info('start')
