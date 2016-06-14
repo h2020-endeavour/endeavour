@@ -3,6 +3,8 @@ The ENDEAVOUR platform
 ### Instructions to run a test
 Start the VM, open a terminal and run the following command to run example test-mh in examples folder:
 
+    $ cd ~/iSDX
+    $ git checkout mh-ctrlr
     $ ~/endeavour/tm-launch.sh test-mh
 
 ### Instructions to test the current code
