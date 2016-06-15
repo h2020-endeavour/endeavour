@@ -99,18 +99,20 @@ class IP_LBalancer(Load_Balancer):
             print ("key[%s] = %s " % (key, value))
         print ("id_matcher[48]: %s ") % self.id_matcher[48]
 
+    def get_ip_network(self):
+        return self.id_matcher[max(self.id_matcher, key=self.id_matcher.get)]
 
 
     def get_ip_match(self, match_id):
         METADATA_MASK = 0xffffffff
         ETH_TYPE_IP = 0x0800
         metadata = [match_id, METADATA_MASK]
+        mask = self.get_ip_network
         ipv4_src = 0
 
         if match_id in self.id_matcher:
             #return decimal mask
-            mask = self.id_matcher[match_id]
-            ipv4_src = mask
+            ipv4_src = (self.id_matcher[match_id], mask)
             #todo build match
         
         match = {"eth_type": ETH_TYPE_IP, "ipv4_src": ipv4_src}
