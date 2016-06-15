@@ -157,7 +157,7 @@ class Umbrella(object):
 
                 
                 match2, metadata2 = self.lbal.get_ip_match(core_id, "ipv4_src")
-                match.append(match2)
+                #match.append(match2)
                 print("match: %s" % match)
 
                 # Send for every Core to every Edge

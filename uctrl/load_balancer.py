@@ -122,7 +122,7 @@ class IP_LBalancer(Load_Balancer):
             #return decimal mask
             ipv4_src = (self.id_matcher[match_id], mask)
             #todo build match
-        match = {"eth_type": ETH_TYPE_IP, checked_field: ipv4_src}
+        match = {"eth_type": ETH_TYPE_IP, checked_field: ipv4_src, "ipv4_dst": ipv4_src}
         return match, metadata
 
     def get_flow_mod(self):
