@@ -141,8 +141,8 @@ class Umbrella(object):
     # Just send load balancer flows to umbrella. 
     def handle_load_balancer(self, rule_type):
 
-        match_bytes = ["00000000", "00000000", "000000000", "11110000"]
-        self.lbal.init(self.config.cores, match)
+        match_bytes = [0, 0, 0, "00110000"]
+        self.lbal.init(self.config.cores, match_bytes)
 
         # Rule for every Edge
         for edge in self.config.edge_core:

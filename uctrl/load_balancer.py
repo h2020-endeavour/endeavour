@@ -103,13 +103,14 @@ class IP_LBalancer(Load_Balancer):
 
 
 
-    def get_ip_match(self, match_id, count):
+    def get_ip_match(self, match_id):
         METADATA_MASK = 0xffffffff
         metadata = [match_id, METADATA_MASK]
         
         if match_id in self.id_matcher:
             #return decimal mask
             mask = self.id_matcher[match_id]
+            ipv4_src = mask
             #todo build match
             match = {"eth_type": ETH_TYPE_IP, "ipv4_src": ipv4_src}
         return match, metadata
