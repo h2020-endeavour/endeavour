@@ -83,15 +83,14 @@ class IP_LBalancer(Load_Balancer):
         #debug print
         print ("allset: %s ") % allset
 
-
-
-
+for core in self.config.cores:
         # link every core to a match
         # works only for the 4. byte
         for core in cores:
+            core_id = self.config.cores[core]
             set_elem = setarray[3] # fix atm look only at byte 4
             elem = set_elem.pop()
-            self.id_matcher.update({core:elem})
+            self.id_matcher.update({core_id:elem})
         #debug print    
         print ("id_matcher: %s ") % self.id_matcher
 
