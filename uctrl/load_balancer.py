@@ -107,14 +107,15 @@ class IP_LBalancer(Load_Balancer):
         METADATA_MASK = 0xffffffff
         ETH_TYPE_IP = 0x0800
         metadata = [match_id, METADATA_MASK]
-        mask = self.get_ip_network
+        mask = self.get_ip_network()
+        print ("mask: %s" % mask)
         ipv4_src = 0
 
         if match_id in self.id_matcher:
             #return decimal mask
             ipv4_src = (self.id_matcher[match_id], mask)
             #todo build match
-        
+            print ("ipv4_src: %s" % ipv4_src)
         match = {"eth_type": ETH_TYPE_IP, "ipv4_src": ipv4_src}
         return match, metadata
 
