@@ -83,7 +83,7 @@ class IP_LBalancer(Load_Balancer):
         #debug print
         print ("allset: %s ") % allset
 
-for core in self.config.cores:
+        for core in self.config.cores:
         # link every core to a match
         # works only for the 4. byte
         for core in cores:
