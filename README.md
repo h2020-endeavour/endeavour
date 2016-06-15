@@ -55,7 +55,7 @@ $ git checkout mh-ctrlr
 
 ### Starting ENDEAVOUR
 
-Run an example instance of the system. The example is based on the settings defined in the ```test-mh`` folder inside ```examples```. 
+Run an example instance of the system. The example is based on the settings defined in the ```test-mh``` folder inside ```examples```. 
 
 ```bash
 $ ~/endeavour/tm-launch.sh test-mh
