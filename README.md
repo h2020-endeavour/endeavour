@@ -1,6 +1,6 @@
 # ENDEAVOUR
 
-This is the ENDEAVOUR platform, a Software-Defined exChange being developed in the context of the Horizon 2020 EU-funded project [ENDEAVOUR: Towards a flexible software-defined network ecosystem](https://www.h2020-endeavour.eu/)
+This is the ENDEAVOUR platform, a Software-Defined eXchange being developed in the context of the Horizon 2020 EU-funded project [ENDEAVOUR: Towards a flexible software-defined network ecosystem](https://www.h2020-endeavour.eu/)
 
 ## Setup
 
