@@ -107,7 +107,8 @@ class IP_LBalancer(Load_Balancer):
         METADATA_MASK = 0xffffffff
         ETH_TYPE_IP = 0x0800
         metadata = [match_id, METADATA_MASK]
-        
+        ipv4_src = 0
+
         if match_id in self.id_matcher:
             #return decimal mask
             mask = self.id_matcher[match_id]
