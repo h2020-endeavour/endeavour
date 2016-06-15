@@ -106,12 +106,15 @@ class IP_LBalancer(Load_Balancer):
         ipv4_fields = ["ipv4_src", "ipv4_dst"]
         if field in ipv4_fields:
             return field
+        else:
+            return 0
 
     def get_ip_match(self, match_id, field):
         METADATA_MASK = 0xffffffff
         ETH_TYPE_IP = 0x0800
         metadata = [match_id, METADATA_MASK]
         mask = self.get_ip_network()
+        checked_field = self.check_possibile_fields(field)
         print ("mask: %s" % mask)
         ipv4_src = 0
 
@@ -119,7 +122,7 @@ class IP_LBalancer(Load_Balancer):
             #return decimal mask
             ipv4_src = (self.id_matcher[match_id], mask)
             #todo build match
-        match = {"eth_type": ETH_TYPE_IP, check_possibile_fields(field): ipv4_src}
+        match = {"eth_type": ETH_TYPE_IP, checked_field: ipv4_src}
         return match, metadata
 
     def get_flow_mod(self):
