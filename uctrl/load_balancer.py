@@ -32,7 +32,7 @@ class Dummy_LBalancer(Load_Balancer):
 class IP_LBalancer(Load_Balancer):
     def __init__(self, config):
         super(IP_LBalancer, self).__init__()
-        self.id_matcher = []
+        self.id_matcher = {}
 
     
     def init(self, cores, match_bytes):
