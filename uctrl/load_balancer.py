@@ -105,6 +105,7 @@ class IP_LBalancer(Load_Balancer):
 
     def get_ip_match(self, match_id):
         METADATA_MASK = 0xffffffff
+        ETH_TYPE_IP = 0x0800
         metadata = [match_id, METADATA_MASK]
         
         if match_id in self.id_matcher:
