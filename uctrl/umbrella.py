@@ -151,7 +151,7 @@ class Umbrella(object):
             
                 # Decision for Match is core_id
                 core_id = self.config.cores[core]
-                match, metadata = self.lbal.get_ip_match(core_id)
+                match, metadata = self.lbal.get_ip_match(core_id, "ipv4_src")
 
                 # Build Instruction Meta-Information and Goto-Table
                 instructions = {"meta": metadata, "goto": ["umbrella-edge"]}
