@@ -99,7 +99,7 @@ class IP_LBalancer(Load_Balancer):
         #debug print
         for key, value in self.id_matcher.iteritems():
             print ("key[%s] = %s " % (key, value))
-        print ("id_matcher[48]: %s ") % self.id_matcher[48]
+        #print ("id_matcher[48]: %s ") % self.id_matcher[48]
 
 
 
