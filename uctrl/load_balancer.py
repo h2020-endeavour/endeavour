@@ -115,7 +115,6 @@ class IP_LBalancer(Load_Balancer):
             #return decimal mask
             ipv4_src = (self.id_matcher[match_id], mask)
             #todo build match
-            print ("ipv4_src: %s" % ipv4_src)
         match = {"eth_type": ETH_TYPE_IP, "ipv4_src": ipv4_src}
         return match, metadata
 
