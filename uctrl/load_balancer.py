@@ -121,7 +121,7 @@ class IP_LBalancer(Load_Balancer):
         if match_id in self.id_matcher:
             #return decimal mask
             ipv4_src = (self.id_matcher[match_id], mask)
-            #todo build match
+            #todo multi match
         match = {"eth_type": ETH_TYPE_IP, checked_field: ipv4_src, "ipv4_dst": ipv4_src}
         return match, metadata
 
