@@ -163,6 +163,7 @@ class IP_LBalancer(Load_Balancer):
         #for j in range(0, 255):
         #new_set.add(byte_array[i] & j) # logic AND
         #set_array.append(new_set)
+        value_subset = []
 
         for element in matches:
             print ("element: %s") % element
@@ -179,10 +180,13 @@ class IP_LBalancer(Load_Balancer):
                 if match_id in element[field_key]:
                     ipv4 = (id_matcher[match_id], mask)
 
+                value_subset.append(id_matcher.itervalues())
+
+
             add_match = {checked_field: ipv4}
             match.update(add_match)
 
-        print match
+        print ("value_subset: %s") % value_subset
             
         #for field_key in matches:
         #    checked_field = self.check_possibile_fields(field_key)
