@@ -92,14 +92,15 @@ class IP_LBalancer(Load_Balancer):
         print ("setarray: %s") % setarray[3]
 
 
-        
+
         # link every core to a match
         # works only for the 4. byte
         for index, core in enumerate(cores):
             core_id = cores[core]
             
             set_elem = setarray[3] # fix atm look only at byte 4
-            elem = set_elem.pop()
+            #elem = set_elem.pop()
+            elem = idlist[index%len(cores)]
             
             print "index,core: %s %s" % (index%len(cores),core)
 
