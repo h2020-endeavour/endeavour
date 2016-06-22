@@ -148,8 +148,6 @@ class Umbrella(object):
         
         print (id_matcher1)
         print (id_matcher2)
-        
-        multi_match = {'ipv4_src': id_matcher1}, {'ipv4_dst': id_matcher2})
 
         #match_bytes = [0, 0, 0, "01000000"]
         #self.lbal.init(self.config.cores, match_bytes)
@@ -161,7 +159,7 @@ class Umbrella(object):
             
                 # Decision for Match is core_id
                 core_id = self.config.cores[core]
-                match, metadata = self.lbal.get_ip_multi_match(core_id, multi_match)
+                match, metadata = self.lbal.get_ip_multi_match(core_id, {'ipv4_src': id_matcher1}, {'ipv4_dst':id_matcher2})
                 # Build Instruction Meta-Information and Goto-Table
                 instructions = {"meta": metadata, "goto": ["umbrella-edge"]}
 
