@@ -182,7 +182,7 @@ class IP_LBalancer(Load_Balancer):
 
                 tupel = ()
                 for val in id_matcher.itervalues():
-                    tupel = tupel + (val)
+                    tupel = tupel + (val,)
                 value_subset.append(tupel)
 
 
