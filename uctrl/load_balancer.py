@@ -159,10 +159,18 @@ class IP_LBalancer(Load_Balancer):
 
         print (matches)
 
-        for field_key in matches:
-            print ("field_key: %s") % field_key
+        for element in matches:
+            print ("element: %s") % element
 
+            for field_key in element:
+                id_match = element[field_key]
 
+                checked_field = self.check_possibile_fields(field_key)
+                mask = self.get_ip_network(id_match)
+
+                print ("match_id: %s matches[field_key]: %s field_key: %s match_id: %s mask: %s") % (match_id, element[field_key], field_key, match_id, mask)
+
+            
         #for field_key in matches:
         #    checked_field = self.check_possibile_fields(field_key)
             #mask = self.get_ip_network(matches[field_key])
