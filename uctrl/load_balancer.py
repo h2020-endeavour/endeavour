@@ -159,11 +159,17 @@ class IP_LBalancer(Load_Balancer):
 
         #print (matches)
 
+        #new_set = set([])
+        #for j in range(0, 255):
+        #new_set.add(byte_array[i] & j) # logic AND
+        #set_array.append(new_set)
+
         for element in matches:
-            #print ("element: %s") % element
+            print ("element: %s") % element
 
             for field_key in element:
                 id_matcher = element[field_key]
+                print ("id_matcher: %s") % id_matcher
 
                 checked_field = self.check_possibile_fields(field_key)
                 mask = self.get_ip_network(id_matcher)
