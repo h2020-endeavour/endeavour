@@ -157,10 +157,10 @@ class IP_LBalancer(Load_Balancer):
         ipv4 = 0
         mask = 0
 
-        print ("matches: %s" % matches
+        print ("matches: %s") % matches
 
         for field_key in matches:
-            print ("field_key: %s" field_key)
+            print ("field_key: %s") % field_key
 
 
         #for field_key in matches:
