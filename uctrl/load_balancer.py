@@ -38,7 +38,7 @@ class IP_LBalancer(Load_Balancer):
     def init(self, cores, match_bytes):
         
         self.id_matcher = {}
-        
+
         # fill bytearray with match
         # string like '00000011' or
         # int from 0 to 255
@@ -157,8 +157,10 @@ class IP_LBalancer(Load_Balancer):
         ipv4 = 0
         mask = 0
 
-        print matches
+        print ("matches: %s" % matches
 
+        for field_key in matches:
+            print ("field_key: %s" field_key)
 
 
         #for field_key in matches:
