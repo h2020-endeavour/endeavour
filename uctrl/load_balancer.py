@@ -32,10 +32,12 @@ class Dummy_LBalancer(Load_Balancer):
 class IP_LBalancer(Load_Balancer):
     def __init__(self, config):
         super(IP_LBalancer, self).__init__()
-        self.id_matcher = {}
+        
 
     
     def init(self, cores, match_bytes):
+        
+        self.id_matcher = {}
         
         # fill bytearray with match
         # string like '00000011' or

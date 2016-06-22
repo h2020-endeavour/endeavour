@@ -143,6 +143,7 @@ class Umbrella(object):
 
         match_byte1 = [0, 0, 0, "10000000"]
         match_byte2 = [0, 0, 0, "01000000"]
+        
         id_matcher1 = self.lbal.init(self.config.cores, match_byte1)
         id_matcher2 = self.lbal.init(self.config.cores, match_byte2)
         
