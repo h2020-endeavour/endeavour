@@ -102,9 +102,9 @@ class IP_LBalancer(Load_Balancer):
             set_elem = setarray[3] # fix atm look only at byte 4
             #elem = set_elem.pop()
 
-            elem = idlist[index%len(cores)]
+            elem = idlist[index%len(idlist)]
             print "elem: %s" % elem
-            print "index,core: %s %s" % (index%len(cores),core)
+            print "index,core: %s %s" % (index%len(idlist),core)
 
             self.id_matcher.update({core_id:elem})
 
