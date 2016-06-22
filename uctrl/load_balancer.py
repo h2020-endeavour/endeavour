@@ -87,7 +87,8 @@ class IP_LBalancer(Load_Balancer):
         idlist = []
         for id in set(setarray[3]):
             idlist.append(id)
-
+        print ("idlist: %s") % idlist
+        print ("len(idlist): %s" % len(idlist)
 
         print ("setarray: %s") % setarray[3]
 
@@ -100,8 +101,9 @@ class IP_LBalancer(Load_Balancer):
             
             set_elem = setarray[3] # fix atm look only at byte 4
             #elem = set_elem.pop()
+
             elem = idlist[index%len(cores)]
-            
+            print "elem: %s" % elem
             print "index,core: %s %s" % (index%len(cores),core)
 
             self.id_matcher.update({core_id:elem})
