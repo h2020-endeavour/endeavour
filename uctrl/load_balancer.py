@@ -88,7 +88,7 @@ class IP_LBalancer(Load_Balancer):
         for id in set(setarray[3]):
             idlist.append(id)
         print ("idlist: %s") % idlist
-        print ("len(idlist): %s" % len(idlist)
+        print ("len(idlist: %s") % len(idlist)
 
         print ("setarray: %s") % setarray[3]
 
