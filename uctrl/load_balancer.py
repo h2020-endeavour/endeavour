@@ -160,7 +160,8 @@ class IP_LBalancer(Load_Balancer):
             mask = self.get_ip_network(matches[field_key])
 
             if match_id in matches[field_key]:
-                ipv4 = (matches[field_key][match_id], mask)
+                print ("match_id: %s matches[field_key]: %s field_key: %s match_id: %s mask: %s") % (match_id matches[field_key] field_key match_id mask)
+                #ipv4 = (matches[field_key][match_id], mask)
             
             add_match = {checked_field: ipv4}
             match.update(add_match)
