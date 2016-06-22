@@ -83,15 +83,21 @@ class IP_LBalancer(Load_Balancer):
         #debug print
         print ("allset: %s ") % allset
 
+        idlist = []
+        for id in set(setarray[3]):
+            idlist.append(id)
         # link every core to a match
         # works only for the 4. byte
-        for core in cores:
+        for index, core in enumerate(cores):
             core_id = cores[core]
+            
             set_elem = setarray[3] # fix atm look only at byte 4
             elem = set_elem.pop()
+            
+            print "index,core: %s" % (index%len(cores),core)
+
             self.id_matcher.update({core_id:elem})
-            set_elem.add(elem)
-            setarray[3] = set_elem
+
         #debug print    
         print ("id_matcher: %s ") % self.id_matcher
 
