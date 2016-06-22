@@ -111,7 +111,7 @@ class IP_LBalancer(Load_Balancer):
 
         #debug print    
         print ("id_matcher: %s ") % self.id_matcher
-        return id_matcher
+        return self.id_matcher
 
         #debug print
         #for key, value in self.id_matcher.iteritems():
