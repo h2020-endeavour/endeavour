@@ -174,7 +174,7 @@ class IP_LBalancer(Load_Balancer):
                     ipv4 = (id_matcher[match_id], mask)
 
             add_match = {checked_field: ipv4}
-        match.update(add_match)
+            match.update(add_match)
 
         print match
             
