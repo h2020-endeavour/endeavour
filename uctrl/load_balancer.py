@@ -180,7 +180,10 @@ class IP_LBalancer(Load_Balancer):
                 if match_id in element[field_key]:
                     ipv4 = (id_matcher[match_id], mask)
 
-                value_subset.append(id_matcher.itervalues())
+                tupel = ()
+                for val in id_matcher.itervalues():
+                    tupel.append(val)
+                value_subset.append(tupel)
 
 
             add_match = {checked_field: ipv4}
