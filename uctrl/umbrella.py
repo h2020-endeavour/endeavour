@@ -144,8 +144,8 @@ class Umbrella(object):
         match_bytes = [0, 0, 0, "10000000"]
         self.lbal.init(self.config.cores, match_bytes)
         
-        match_bytes = [0, 0, 0, "01000000"]
-        self.lbal.init(self.config.cores, match_bytes)
+        #match_bytes = [0, 0, 0, "01000000"]
+        #self.lbal.init(self.config.cores, match_bytes)
 
         # Rule for every Edge
         for edge in self.config.edge_core:

@@ -37,17 +37,16 @@ class IP_LBalancer(Load_Balancer):
     
     def init(self, cores, match_bytes):
         
-        
         # fill bytearray with match
         # string like '00000011' or
         # int from 0 to 255
-        arr_bytes = bytearray(len(match_bytes))
+        byte_array = bytearray(len(match_bytes))
         for i in range(len(match_bytes)): 
             val = match_bytes[i]
             if isinstance(val, str):
-                arr_bytes[i] = int(val, 2)
+                byte_array[i] = int(val, 2)
             elif isinstance(val,int):
-                arr_bytes[i] = val
+                byte_array[i] = val
         #debug print
         #for i in range(len(arr_bytes)):
         #    print arr_bytes[i]
@@ -56,22 +55,22 @@ class IP_LBalancer(Load_Balancer):
         # set for every match
         # [set([0]), set([0]), set([0]), set([0, 32, 64, 96])]
         # match_bytes [0, 0, 0, "01100000"]
-        setarray = []
-        for i in range(len(arr_bytes)):
-            se = set([])
+        set_array = []
+        for i in range(len(byte_array)):
+            new_set = set([])
             for j in range(0, 255):
-                se.add(arr_bytes[i] & j)
-            setarray.append(se)
+                new_set.add(byte_array[i] & j) # logic AND
+            set_array.append(new_set)
         #debug print
         #for i in se:
         #    print i
-        print ("setarray: %s ") % setarray
+        print ("setarray: %s ") % set_array
 
 
         ##todo
         # idea to build matches from the different bytes 
         allset = set([])
-        for index, value in enumerate(setarray):
+        for index, value in enumerate(set_array):
             print(index, value)
             if len(value) > 1:
                 setlist = list(value)
@@ -83,14 +82,16 @@ class IP_LBalancer(Load_Balancer):
         #debug print
         print ("allset: %s ") % allset
 
-        print ("setarray: %s") % setarray[3]
+        print ("setarray: %s") % set_array[3]
+        
+
         idlist = []
-        for id in set(setarray[3]):
+        for id in set(set_array[3]):
             idlist.append(id)
         print ("idlist: %s") % idlist
         print ("len(idlist: %s") % len(idlist)
 
-        print ("setarray: %s") % setarray[3]
+        print ("setarray: %s") % set_array[3]
 
 
 
@@ -99,7 +100,7 @@ class IP_LBalancer(Load_Balancer):
         for index, core in enumerate(cores):
             core_id = cores[core]
             
-            set_elem = setarray[3] # fix atm look only at byte 4
+            set_elem = set_array[3] # fix atm look only at byte 4
             #elem = set_elem.pop()
 
             elem = idlist[index%len(idlist)]
@@ -113,9 +114,9 @@ class IP_LBalancer(Load_Balancer):
 
 
         #debug print
-        for key, value in self.id_matcher.iteritems():
-            print ("key[%s] = %s " % (key, value))
-        print ("id_matcher[48]: %s ") % self.id_matcher[48]
+        #for key, value in self.id_matcher.iteritems():
+        #    print ("key[%s] = %s " % (key, value))
+        #print ("id_matcher[48]: %s ") % self.id_matcher[48]
 
     def get_ip_network(self):
         return self.id_matcher[max(self.id_matcher, key=self.id_matcher.get)]
