@@ -141,9 +141,16 @@ class Umbrella(object):
     # Just send load balancer flows to umbrella. 
     def handle_load_balancer(self, rule_type):
 
-        match_bytes = [0, 0, 0, "10000000"]
-        self.lbal.init(self.config.cores, match_bytes)
+        match_byte1 = [0, 0, 0, "10000000"]
+        match_byte2 = [0, 0, 0, "01000000"]
+        id_matcher1 = self.lbal.init(self.config.cores, match_byte1)
+        id_matcher2 = self.lbal.init(self.config.cores, match_byte2)
         
+        print (id_matcher1)
+        print (id_matcher2)
+        
+        multi_match = {'ipv4_src': id_matcher1}, {'ipv4_dst': id_matcher2})
+
         #match_bytes = [0, 0, 0, "01000000"]
         #self.lbal.init(self.config.cores, match_bytes)
 
@@ -154,12 +161,12 @@ class Umbrella(object):
             
                 # Decision for Match is core_id
                 core_id = self.config.cores[core]
-                match, metadata = self.lbal.get_ip_match(core_id, "ipv4_src")
+                match, metadata = self.lbal.get_ip_multi_match(core_id, multi_match)
                 # Build Instruction Meta-Information and Goto-Table
                 instructions = {"meta": metadata, "goto": ["umbrella-edge"]}
 
                 
-                match2, metadata2 = self.lbal.get_ip_match(core_id, "ipv4_src")
+                #match2, metadata2 = self.lbal.get_ip_multi_match(core_id, "ipv4_src")
                 #match.append(match2)
                 print("match: %s" % match)
 

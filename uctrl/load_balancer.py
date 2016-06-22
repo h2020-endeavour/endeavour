@@ -111,7 +111,7 @@ class IP_LBalancer(Load_Balancer):
 
         #debug print    
         print ("id_matcher: %s ") % self.id_matcher
-
+        return id_matcher
 
         #debug print
         #for key, value in self.id_matcher.iteritems():
@@ -147,7 +147,7 @@ class IP_LBalancer(Load_Balancer):
         match = {"eth_type": ETH_TYPE_IP, checked_field: ipv4_src}
         return match, metadata
 
-    def get_ip_multi_match(self, match_id, *match):
+    def get_ip_multi_match(self, match_id, *matches):
         METADATA_MASK = 0xffffffff
         ETH_TYPE_IP = 0x0800
         metadata = [match_id, METADATA_MASK]
@@ -155,16 +155,16 @@ class IP_LBalancer(Load_Balancer):
         ipv4 = 0
         mask = 0
 
-        for field_key in match:
+        for field_key in matches:
             checked_field = self.check_possibile_fields(field_key)
             mask = get_ip_network(match[key])
 
-            if match_id in match[key]:
-                ipv4 = (match[key][match_id], mask)
+            if match_id in matches[key]:
+                ipv4 = (matches[key][match_id], mask)
             
             add_match = {checked_field: ipv4}
             match.update(add_match)
-            print match[key]
+            print matches[key]
        
         return match, metadata
 
