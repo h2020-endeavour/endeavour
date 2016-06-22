@@ -121,6 +121,9 @@ class IP_LBalancer(Load_Balancer):
     def get_ip_network(self):
         return self.id_matcher[max(self.id_matcher, key=self.id_matcher.get)]
 
+    def get_ip_network(self, network):
+        return network[max(network, key=network.get)]
+
     def check_possibile_fields(self, field):
         ipv4_fields = ["ipv4_src", "ipv4_dst"]
         if field in ipv4_fields:
@@ -134,7 +137,6 @@ class IP_LBalancer(Load_Balancer):
         metadata = [match_id, METADATA_MASK]
         mask = self.get_ip_network()
         checked_field = self.check_possibile_fields(field)
-        print ("mask: %s" % mask)
         ipv4_src = 0
 
         if match_id in self.id_matcher:
@@ -144,6 +146,28 @@ class IP_LBalancer(Load_Balancer):
         #match = {"eth_type": ETH_TYPE_IP, checked_field: ipv4_src, "ipv4_dst": ipv4_src}
         match = {"eth_type": ETH_TYPE_IP, checked_field: ipv4_src}
         return match, metadata
+
+    def get_ip_multi_match(self, match_id, *match):
+        METADATA_MASK = 0xffffffff
+        ETH_TYPE_IP = 0x0800
+        metadata = [match_id, METADATA_MASK]
+        match = {"eth_type": ETH_TYPE_IP}
+        ipv4 = 0
+        mask = 0
+
+        for field_key in match:
+            checked_field = self.check_possibile_fields(field_key)
+            mask = get_ip_network(match[key])
+
+            if match_id in match[key]:
+                ipv4 = (match[key][match_id], mask)
+            
+            add_match = {checked_field: ipv4}
+            match.update(add_match)
+            print match[key]
+       
+        return match, metadata
+
 
     def get_flow_mod(self):
         return self.flow_mods
