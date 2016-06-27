@@ -141,25 +141,19 @@ class Umbrella(object):
     # Just send load balancer flows to umbrella. 
     def handle_load_balancer(self, rule_type):
 
+        # single check
         match_byte1 = [0, 0, 0, "10000000"]
         id_matcher1 = self.lbal.init_match(match_byte1)
         print ("id_matcher1: %s") % id_matcher1
-        # set core match for single check field
         #self.lbal.set_core_match(self.config.cores, id_matcher1)
         
+        # multi check
         match_byte2 = [0, 0, 0, "01000000"]
         match_byte3 = [0, 0, 0, "00100000"]
         id_matcher2, id_matcher3 = self.lbal.init_multi_match(match_byte2, match_byte3)
         print ("id_matcher2: %s") % id_matcher2
         print ("id_matcher3: %s") % id_matcher3
-         # set core match for multi check field
-        #self.lbal.set_core_multi_match(self.config.cores, [id_matcher2, id_matcher3])
-
-        # test
-        match_byte4 = [0, 0, 0, "01100000"]
-        id_matcher4 = self.lbal.init_match(match_byte4)
-        print ("id_matcher4: %s") % id_matcher4
-        self.lbal.set_core_match(self.config.cores, id_matcher4)
+        self.lbal.set_core_multi_match(self.config.cores, [id_matcher2, id_matcher3])
 
         # Rule for every Edge
         for edge in self.config.edge_core:
@@ -171,16 +165,13 @@ class Umbrella(object):
                 # single check field
                 #match, metadata = self.lbal.get_ip_match(core_id, 'ipv4_src')
 
-                # alternative for multi_match
-                #match, metadata = self.lbal.get_ip_multi_match(core_id, ['ipv4_src','ipv4_dst'])
-                
-                # test
-                match, metadata = self.lbal.get_ip_multi_match(core_id, ['ipv4_src'])
+                # multi check field
+                match, metadata = self.lbal.get_ip_multi_match(core_id, ['ipv4_src','ipv4_dst'])
 
 
                 # Build Instruction Meta-Information and Goto-Table
                 instructions = {"meta": metadata, "goto": ["umbrella-edge"]}
-                print("match: %s" % match)
+                #print("match: %s" % match)
 
                 # Send for every Core to every Edge
                 self.fm_builder.add_flow_mod("insert", rule_type, LB_PRIORITY, match, instructions, self.config.dpid_2_name[edge]) 
@@ -193,6 +184,5 @@ class Umbrella(object):
         self.handle_core_switches("umbrella-core")
         self.handle_egress("umbrella-edge")
         self.handle_load_balancer("load-balancer")
-        #self.lbalancer_flow("load-balancer")
         self.sender.send(self.fm_builder.get_msg())
         self.logger.info('sent flow mods to reference monitor')

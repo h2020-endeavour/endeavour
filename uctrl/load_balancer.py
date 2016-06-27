@@ -36,7 +36,7 @@ class IP_LBalancer(Load_Balancer):
         
     def init_match(self, match_bytes):
         
-        self.match_list = [] # list
+        self.match_list = []
 
         # fill bytearray with match
         # string like '00000011' or
@@ -48,10 +48,6 @@ class IP_LBalancer(Load_Balancer):
                 byte_array[i] = int(val, 2)
             elif isinstance(val,int):
                 byte_array[i] = val
-        #debug print
-        #for i in range(len(byte_array)):
-        #    print byte_array[i]
-
 
         # set for every match
         # [set([0]), set([0]), set([0]), set([0, 32, 64, 96])]
@@ -62,10 +58,6 @@ class IP_LBalancer(Load_Balancer):
             for j in range(0, 255):
                 new_set.add(byte_array[i] & j) # logic AND
             set_array.append(new_set)
-        #debug print
-        #for i in set_array:
-        #    print i
-        #print ("setarray: %s ") % set_array
 
 
         ##todo -----------------------------------------
@@ -83,16 +75,15 @@ class IP_LBalancer(Load_Balancer):
         #debug print
         #print ("allset: %s ") % allset -----------------
 
-        #print ("setarray: %s") % set_array[3]
+
         for match in set(set_array[3]):
             self.match_list.append(match)
         return self.match_list
-        #print ("idlist: %s") % idlist
-        #print ("len(idlist: %s") % len(idlist)
-        #print ("setarray: %s") % set_array[3]
+
 
     def set_core_match(self, cores, match_list):
-        self.id_matcher = {} # key value
+        self.id_matcher = {}
+        
         # link every core to a match
         for index, core in enumerate(cores):
             core_id = cores[core] # index or core
@@ -120,15 +111,16 @@ class IP_LBalancer(Load_Balancer):
 
 
     def set_core_multi_match(self, cores, match_list):
-        self.id_matcher = {} # key value
-        print ("len_match_list: %s") % len(match_list)
+        self.id_matcher = {}
+
         if (len(match_list) == 2):
             subsets = self.get_subsets(match_list)
         else:
             subsets = match_list
+        
         # link every core to a match
         for index, core in enumerate(cores):
-            core_id = cores[core] # index or core
+            core_id = cores[core]
             elem = subsets[index%len(subsets)]
             self.id_matcher.update({core_id:elem})
        
@@ -145,7 +137,7 @@ class IP_LBalancer(Load_Balancer):
             checked_field = self.check_possibile_fields(field)
             
             if match_id in self.id_matcher:
-                #return decimal tupelmask
+                #return decimal tupel
                 ipv4 = self.id_matcher[match_id]
                 match.update({checked_field : (ipv4[index], mask[index])})
 
