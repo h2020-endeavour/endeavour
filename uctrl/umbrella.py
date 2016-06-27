@@ -142,18 +142,23 @@ class Umbrella(object):
     def handle_load_balancer(self, rule_type):
 
         match_byte1 = [0, 0, 0, "10000000"]
-        match_byte2 = [0, 0, 0, "01000000"]
-
         id_matcher1 = self.lbal.init_match(match_byte1)
         print ("id_matcher1: %s") % id_matcher1
         # set core match for single check field
-        self.lbal.set_core_match(self.config.cores, id_matcher1)
+        #self.lbal.set_core_match(self.config.cores, id_matcher1)
         
-        id_matcher2, id_matcher3 = self.lbal.init_multi_match(match_byte1, match_byte2)
+        match_byte2 = [0, 0, 0, "01000000"]
+        match_byte3 = [0, 0, 0, "00100000"]
+        id_matcher2, id_matcher3 = self.lbal.init_multi_match(match_byte2, match_byte3)
         print ("id_matcher2: %s") % id_matcher2
         print ("id_matcher3: %s") % id_matcher3
          # set core match for multi check field
-        self.lbal.set_core_multi_match(self.config.cores, [id_matcher1, id_matcher2])
+        #self.lbal.set_core_multi_match(self.config.cores, [id_matcher2, id_matcher3])
+
+        # test
+        match_byte4 = [0, 0, 0, "01100000"]
+        id_matcher4 = self.lbal.init_match(match_byte4)
+        self.lbal.set_core_multi_match(self.config.cores, [id_matcher4])
 
         # Rule for every Edge
         for edge in self.config.edge_core:
@@ -166,7 +171,9 @@ class Umbrella(object):
                 #match, metadata = self.lbal.get_ip_match(core_id, 'ipv4_src')
 
                 # alternative for multi_match
-                match, metadata = self.lbal.get_ip_multi_match(core_id, ['ipv4_src','ipv4_dst'])
+                #match, metadata = self.lbal.get_ip_multi_match(core_id, ['ipv4_src','ipv4_dst'])
+                # test
+                match, metadata = self.lbal.get_ip_multi_match(core_id, ['ipv4_src'])
 
 
                 # Build Instruction Meta-Information and Goto-Table
