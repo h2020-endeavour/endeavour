@@ -159,7 +159,7 @@ class Umbrella(object):
         match_byte4 = [0, 0, 0, "01100000"]
         id_matcher4 = self.lbal.init_match(match_byte4)
         print ("id_matcher4: %s") % id_matcher4
-        self.lbal.set_core_multi_match(self.config.cores, [id_matcher4])
+        self.lbal.set_core_match(self.config.cores, id_matcher4)
 
         # Rule for every Edge
         for edge in self.config.edge_core:
@@ -169,13 +169,13 @@ class Umbrella(object):
                 core_id = self.config.cores[core]
 
                 # single check field
-                match, metadata = self.lbal.get_ip_match(core_id, 'ipv4_src')
+                #match, metadata = self.lbal.get_ip_match(core_id, 'ipv4_src')
 
                 # alternative for multi_match
                 #match, metadata = self.lbal.get_ip_multi_match(core_id, ['ipv4_src','ipv4_dst'])
                 
                 # test
-                #match, metadata = self.lbal.get_ip_multi_match(core_id, ['ipv4_src'])
+                match, metadata = self.lbal.get_ip_multi_match(core_id, ['ipv4_src'])
 
 
                 # Build Instruction Meta-Information and Goto-Table
