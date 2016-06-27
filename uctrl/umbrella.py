@@ -158,7 +158,7 @@ class Umbrella(object):
         # test
         match_byte4 = [0, 0, 0, "01100000"]
         id_matcher4 = self.lbal.init_match(match_byte4)
-         print ("id_matcher4: %s") % id_matcher4
+        print ("id_matcher4: %s") % id_matcher4
         self.lbal.set_core_multi_match(self.config.cores, [id_matcher4])
 
         # Rule for every Edge
