@@ -161,7 +161,7 @@ class IP_LBalancer(Load_Balancer):
         else:
             return 0
 
-    def get_subsets(sets):
+    def get_subsets(self, sets):
         new_set = set([])
         for elem1 in sets[0]:
             for elem2 in sets[1]:
