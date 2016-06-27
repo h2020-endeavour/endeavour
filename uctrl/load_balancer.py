@@ -121,7 +121,7 @@ class IP_LBalancer(Load_Balancer):
 
     def set_core_multi_match(self, cores, match_list):
         self.id_matcher = {} # key value
-        subsets = get_subsets(match_list)
+        subsets = self.get_subsets(match_list)
         # link every core to a match
         for index, core in enumerate(cores):
             core_id = cores[core] # index or core
