@@ -68,11 +68,11 @@ class IP_LBalancer(Load_Balancer):
         #print ("setarray: %s ") % set_array
 
 
-        ##todo
+        ##todo -----------------------------------------
         # idea to build matches from the different bytes 
         allset = set([])
         for index, value in enumerate(set_array):
-            print(index, value)
+            #print(index, value)
             if len(value) > 1:
                 setlist = list(value)
         for set_elem in setlist:
@@ -81,7 +81,7 @@ class IP_LBalancer(Load_Balancer):
                 var=1
             allset.add(set_elem * var)
         #debug print
-        #print ("allset: %s ") % allset
+        #print ("allset: %s ") % allset -----------------
 
         #print ("setarray: %s") % set_array[3]
         for match in set(set_array[3]):
@@ -122,7 +122,10 @@ class IP_LBalancer(Load_Balancer):
     def set_core_multi_match(self, cores, match_list):
         self.id_matcher = {} # key value
         print ("len_match_list: %s") % len(match_list)
-        subsets = self.get_subsets(match_list)
+        if (len(match_list) == 2):
+            subsets = self.get_subsets(match_list)
+        else:
+            subsets = match_list
         # link every core to a match
         for index, core in enumerate(cores):
             core_id = cores[core] # index or core
@@ -162,6 +165,7 @@ class IP_LBalancer(Load_Balancer):
         else:
             return 0
 
+    # todo - build for multi matches > 2
     def get_subsets(self, sets):
         new_set = set([])
         for elem1 in sets[0]:
