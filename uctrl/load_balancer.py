@@ -33,11 +33,10 @@ class IP_LBalancer(Load_Balancer):
     def __init__(self, config):
         super(IP_LBalancer, self).__init__()
         
-
-    
-    def init(self, cores, match_bytes):
         
-        self.id_matcher = {}
+    def init_match(self, match_bytes):
+        
+        self.match_list = [] # list
 
         # fill bytearray with match
         # string like '00000011' or
@@ -50,8 +49,8 @@ class IP_LBalancer(Load_Balancer):
             elif isinstance(val,int):
                 byte_array[i] = val
         #debug print
-        #for i in range(len(arr_bytes)):
-        #    print arr_bytes[i]
+        #for i in range(len(byte_array)):
+        #    print byte_array[i]
 
 
         # set for every match
@@ -64,9 +63,9 @@ class IP_LBalancer(Load_Balancer):
                 new_set.add(byte_array[i] & j) # logic AND
             set_array.append(new_set)
         #debug print
-        #for i in se:
+        #for i in set_array:
         #    print i
-        print ("setarray: %s ") % set_array
+        #print ("setarray: %s ") % set_array
 
 
         ##todo
@@ -82,56 +81,23 @@ class IP_LBalancer(Load_Balancer):
                 var=1
             allset.add(set_elem * var)
         #debug print
-        print ("allset: %s ") % allset
+        #print ("allset: %s ") % allset
 
-        print ("setarray: %s") % set_array[3]
-        
+        #print ("setarray: %s") % set_array[3]
+        for match in set(set_array[3]):
+            self.match_list.append(match)
+        return self.match_list
+        #print ("idlist: %s") % idlist
+        #print ("len(idlist: %s") % len(idlist)
+        #print ("setarray: %s") % set_array[3]
 
-        idlist = []
-        for id in set(set_array[3]):
-            idlist.append(id)
-        print ("idlist: %s") % idlist
-        print ("len(idlist: %s") % len(idlist)
-
-        print ("setarray: %s") % set_array[3]
-
-
-
+    def set_core_match(self, cores, match_list):
+        self.id_matcher = {} # key value
         # link every core to a match
-        # works only for the 4. byte
         for index, core in enumerate(cores):
-            core_id = cores[core]
-            
-            set_elem = set_array[3] # fix atm look only at byte 4
-            #elem = set_elem.pop()
-
-            elem = idlist[index%len(idlist)]
-            print "elem: %s" % elem
-            print "index,core: %s %s" % (index%len(idlist),core)
-
+            core_id = cores[index] # index or core
+            elem = match_list[index%len(match_list)]
             self.id_matcher.update({core_id:elem})
-
-        #debug print    
-        print ("id_matcher: %s ") % self.id_matcher
-        return self.id_matcher
-
-        #debug print
-        #for key, value in self.id_matcher.iteritems():
-        #    print ("key[%s] = %s " % (key, value))
-        #print ("id_matcher[48]: %s ") % self.id_matcher[48]
-
-    def get_ip_network(self):
-        return self.id_matcher[max(self.id_matcher, key=self.id_matcher.get)]
-
-    def get_ip_network(self, network):
-        return network[max(network, key=network.get)]
-
-    def check_possibile_fields(self, field):
-        ipv4_fields = ["ipv4_src", "ipv4_dst"]
-        if field in ipv4_fields:
-            return field
-        else:
-            return 0
 
     def get_ip_match(self, match_id, field):
         METADATA_MASK = 0xffffffff
@@ -139,72 +105,69 @@ class IP_LBalancer(Load_Balancer):
         metadata = [match_id, METADATA_MASK]
         mask = self.get_ip_network()
         checked_field = self.check_possibile_fields(field)
-        ipv4_src = 0
+        ipv4 = 0
 
         if match_id in self.id_matcher:
             #return decimal mask
-            ipv4_src = (self.id_matcher[match_id], mask)
-            #todo multi match
-        #match = {"eth_type": ETH_TYPE_IP, checked_field: ipv4_src, "ipv4_dst": ipv4_src}
-        match = {"eth_type": ETH_TYPE_IP, checked_field: ipv4_src}
+            ipv4 = (self.id_matcher[match_id], mask)
+        match = {"eth_type": ETH_TYPE_IP, checked_field: ipv4}
         return match, metadata
 
-    def get_ip_multi_match(self, match_id, *matches):
+    # -----------------------------------------------------------------------------------
+
+    def init_multi_match(self, cores, match_byte1, match_byte2):
+        return self.init_match(match_byte1), self.init_match(match_byte2)
+
+
+    def set_core_multi_match(cores, match_list):
+        self.id_matcher = {} # key value
+        subsets = get_subsets(match_list)
+        # link every core to a match
+        for index, core in enumerate(cores):
+            core_id = cores[index]
+            elem = subsets[index%len(subsets)]
+            self.id_matcher.update({core_id:elem})
+       
+    def get_ip_multi_match(self, match_id, fields):
         METADATA_MASK = 0xffffffff
         ETH_TYPE_IP = 0x0800
         metadata = [match_id, METADATA_MASK]
-        match = {"eth_type": ETH_TYPE_IP}
+        mask = self.get_ip_network()
+
         ipv4 = 0
-        mask = 0
+        match = {"eth_type": ETH_TYPE_IP}
 
-        #print (matches)
-
-        #new_set = set([])
-        #for j in range(0, 255):
-        #new_set.add(byte_array[i] & j) # logic AND
-        #set_array.append(new_set)
-        value_subset = []
-
-        for element in matches:
-            print ("element: %s") % element
-
-            for field_key in element:
-                id_matcher = element[field_key]
-                print ("id_matcher: %s") % id_matcher
-
-                checked_field = self.check_possibile_fields(field_key)
-                mask = self.get_ip_network(id_matcher)
-
-                #print ("match_id: %s matches[field_key]: %s field_key: %s match_id: %s mask: %s") % (match_id, element[field_key], field_key, match_id, mask)
-
-                if match_id in element[field_key]:
-                    ipv4 = (id_matcher[match_id], mask)
-
-                tupel = ()
-                for val in id_matcher.itervalues():
-                    tupel = tupel + (val,)
-                value_subset.append(tupel)
-
-
-            add_match = {checked_field: ipv4}
-            match.update(add_match)
-
-        print ("value_subset: %s") % value_subset
+        for index, field in enumerate(fields):
+            checked_field = self.check_possibile_fields(field)
             
-        #for field_key in matches:
-        #    checked_field = self.check_possibile_fields(field_key)
-            #mask = self.get_ip_network(matches[field_key])
-        #    print ("match_id: %s matches[field_key]: %s field_key: %s match_id: %s mask: %s") % (match_id, matches[field_key], field_key, match_id, mask)
+            if match_id in self.id_matcher:
+                #return decimal tupelmask
+                ipv4 = self.id_matcher[match_id]
+                match.update({checked_field : (ipv4[index], mask[index])})
 
-        #    if match_id in matches[field_key]:
-        #        print ("true") 
-                #ipv4 = (matches[field_key][match_id], mask)
-            
-        #    add_match = {checked_field: ipv4}
-        #    match.update(add_match)
-        #    print matches[field_key]
-       
         return match, metadata
+
+  # -----------------------------------------------------------------------------------
+
+    # need for mask
+    def get_ip_network(self):
+        return self.id_matcher[max(self.id_matcher, key=self.id_matcher.get)]
+
+    # need for field_check
+    def check_possibile_fields(self, field):
+        ipv4_fields = ["ipv4_src", "ipv4_dst"]
+        if field in ipv4_fields:
+            return field
+        else:
+            return 0
+
+    def get_subsets(set1, set2):
+        new_set = set([])
+        for elem1 in set1:
+            for elem2 in set2:
+                elem = (elem1,elem2)
+                new_set.add(elem)
+        return list(new_set)
 
 
     def get_flow_mod(self):
