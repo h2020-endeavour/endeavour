@@ -115,7 +115,7 @@ class IP_LBalancer(Load_Balancer):
 
     # -----------------------------------------------------------------------------------
 
-    def init_multi_match(self, cores, match_byte1, match_byte2):
+    def init_multi_match(self, match_byte1, match_byte2):
         return self.init_match(match_byte1), self.init_match(match_byte2)
 
 
