@@ -166,7 +166,7 @@ class Umbrella(object):
                 #match, metadata = self.lbal.get_ip_match(core_id, 'ipv4_src')
 
                 # alternative for multi_match
-                match, metadata = self.lbal.get_ip_multi_match(core_id, {'ipv4_src': id_matcher2}, {'ipv4_dst':id_matcher3})
+                match, metadata = self.lbal.get_ip_multi_match(core_id, ['ipv4_src','ipv4_dst'])
 
 
                 # Build Instruction Meta-Information and Goto-Table
