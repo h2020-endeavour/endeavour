@@ -144,30 +144,33 @@ class Umbrella(object):
         match_byte1 = [0, 0, 0, "10000000"]
         match_byte2 = [0, 0, 0, "01000000"]
 
-        # set core match for single check field
-        self.lbal.set_core_match(self.config.cores, self.lbal.init_match(match_byte1))
-        
-
-        id_matcher1, id_matcher2 = self.lbal.init_multi_match(match_byte1, match_byte2)
+        id_matcher1 = self.lbal.init_match(match_byte1)
         print ("id_matcher1: %s") % id_matcher1
+        # set core match for single check field
+        self.lbal.set_core_match(self.config.cores, id_matcher1)
+        
+        id_matcher2, id_matcher3 = self.lbal.init_multi_match(match_byte1, match_byte2)
         print ("id_matcher2: %s") % id_matcher2
- 
+        print ("id_matcher3: %s") % id_matcher3
+         # set core match for multi check field
+        self.lbal.set_core_multi_match(self.config.cores, [id_matcher1, id_matcher2])
 
         # Rule for every Edge
         for edge in self.config.edge_core:
             # Rule to every Core
-            for core in self.config.cores:
-            
+            for core in self.config.cores:            
                 # Decision for Match is core_id
                 core_id = self.config.cores[core]
-                match, metadata = self.lbal.get_ip_match(core_id, 'ipv4_src')
+
+                # single check field
+                #match, metadata = self.lbal.get_ip_match(core_id, 'ipv4_src')
 
                 # alternative for multi_match
-                #match, metadata = self.lbal.get_ip_multi_match(core_id, {'ipv4_src': id_matcher1}, {'ipv4_dst':id_matcher2})
+                match, metadata = self.lbal.get_ip_multi_match(core_id, {'ipv4_src': id_matcher2}, {'ipv4_dst':id_matcher3})
+
 
                 # Build Instruction Meta-Information and Goto-Table
                 instructions = {"meta": metadata, "goto": ["umbrella-edge"]}
-
                 print("match: %s" % match)
 
                 # Send for every Core to every Edge

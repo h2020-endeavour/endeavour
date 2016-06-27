@@ -119,7 +119,7 @@ class IP_LBalancer(Load_Balancer):
         return self.init_match(match_byte1), self.init_match(match_byte2)
 
 
-    def set_core_multi_match(cores, match_list):
+    def set_core_multi_match(self, cores, match_list):
         self.id_matcher = {} # key value
         subsets = get_subsets(match_list)
         # link every core to a match
@@ -161,14 +161,13 @@ class IP_LBalancer(Load_Balancer):
         else:
             return 0
 
-    def get_subsets(set1, set2):
+    def get_subsets(sets):
         new_set = set([])
-        for elem1 in set1:
-            for elem2 in set2:
+        for elem1 in sets[0]:
+            for elem2 in sets[1]:
                 elem = (elem1,elem2)
                 new_set.add(elem)
         return list(new_set)
-
 
     def get_flow_mod(self):
         return self.flow_mods
