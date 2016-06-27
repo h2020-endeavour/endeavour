@@ -95,7 +95,7 @@ class IP_LBalancer(Load_Balancer):
         self.id_matcher = {} # key value
         # link every core to a match
         for index, core in enumerate(cores):
-            core_id = cores[index] # index or core
+            core_id = cores[core] # index or core
             elem = match_list[index%len(match_list)]
             self.id_matcher.update({core_id:elem})
 
@@ -124,7 +124,7 @@ class IP_LBalancer(Load_Balancer):
         subsets = get_subsets(match_list)
         # link every core to a match
         for index, core in enumerate(cores):
-            core_id = cores[index]
+            core_id = cores[core] # index or core
             elem = subsets[index%len(subsets)]
             self.id_matcher.update({core_id:elem})
        
