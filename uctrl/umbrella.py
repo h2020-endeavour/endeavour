@@ -169,12 +169,13 @@ class Umbrella(object):
                 core_id = self.config.cores[core]
 
                 # single check field
-                #match, metadata = self.lbal.get_ip_match(core_id, 'ipv4_src')
+                match, metadata = self.lbal.get_ip_match(core_id, 'ipv4_src')
 
                 # alternative for multi_match
                 #match, metadata = self.lbal.get_ip_multi_match(core_id, ['ipv4_src','ipv4_dst'])
+                
                 # test
-                match, metadata = self.lbal.get_ip_multi_match(core_id, ['ipv4_src'])
+                #match, metadata = self.lbal.get_ip_multi_match(core_id, ['ipv4_src'])
 
 
                 # Build Instruction Meta-Information and Goto-Table
