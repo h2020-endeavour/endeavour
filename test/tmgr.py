@@ -20,7 +20,8 @@ import shlex
 
 import tlib
 
-np = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+# TODO: obtain this path from `cwd`/../../iSDX
+np = "/home/vagrant/iSDX"
 if np not in sys.path:
     sys.path.append(np)
 import util.log
