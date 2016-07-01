@@ -1,88 +1,155 @@
-# ENDEAVOUR
+# Test Setup - MultiHop
 
-This is the ENDEAVOUR platform, a Software-Defined eXchange being developed in the context of the Horizon 2020 EU-funded project [ENDEAVOUR: Towards a flexible software-defined network ecosystem](https://www.h2020-endeavour.eu/).
+Instructions to test the current code.
 
-## Setup
+## Running the setup
+The test-mh scenario has been wrapped in a launch.sh shell script.
+The tests from the setup are the same from the Multiple table with
+a single switch scenario.
 
-At the moment, ENDEAVOUR runs within a Vagrant environment. Follow these simple instructions to set it up for yourself.
-
-### Prerequisites
-
-To get started install these softwares on your ```host``` machine:
-
-1. Install ***Vagrant***, it is a wrapper around virtualization softwares like VirtualBox, VMWare etc.: http://www.vagrantup.com/downloads
-
-2. Install ***VirtualBox***, this would be your VM provider: https://www.virtualbox.org/wiki/Downloads
-
-3. Install ***Git***, it is a distributed version control system: https://git-scm.com/downloads
-
-### Basics
-
-* Clone the ```endeavour``` repository from GitHub:
-```bash 
-$ git clone https://github.com/endeavour/endeavour.git
-```
-
-* Change the directory to ```endeavour```:
-```bash
-$ cd endeavour
-```
-
-* Now run the vagrant up command. This will read the Vagrantfile from the current directory and provision the VM accordingly:
-```bash
-$ vagrant up
-```
-
-## Execution
-
-### Access the VM
-
-```bash
-$ vagrant ssh
-```
-
-### Switch to the current development branch
-
-ENDEAVOUR is built upon iSDX. We currently maintain our own development version of iSDX at https://github.com/h2020-endeavour/iSDX and develop the necessary extensions as feature branchs.
-We currently have two extensions:
-* mh-ctrlr - This branch introduces support for a multi-switch IXP fabric.
-* mh-ctrlr_load_balancing - This branch introduces a load balancer function over the multi-switch IXP fabric.
+Before starting the tests, make sure to checkout the branch mh-ctrl in the 
+iSDX repository of endeavour.
 
 ```bash
 $ cd ~/iSDX
-$ git checkout mh-ctrlr
+$ git checkout mh-ctrl
+```bash
+
+### Log Server
+```bash
+$ cd ~
+$ ./iSDX/launch.sh test-mh 1
 ```
 
-### Starting ENDEAVOUR
-
-Run an example instance of the system. The example is based on the settings defined in the ```test-mh``` folder inside ```examples```. 
+This performs the following tasks:
 
 ```bash
-$ ~/endeavour/tm-launch.sh test-mh
+$ cd ~/iSDX
+$ sh pctrl/clean.sh
+$ rm -f SDXLog.log
+$ python logServer.py SDXLog.log
 ```
 
-The ```tm-launch.sh``` is a one-script solution to run the entire system.
-If you need to run things manually, consider the following more detailed instructions.
+### Mininet
+```bash
+$ cd ~
+$ ./endeavour/launch.sh test-mh 2
+```
 
-### Step by step instructions to test the current code
+This performs the following tasks:
 
-Open a terminal and run the test topology:
+```bash
+$ cd ~
+$ sudo python endeavour/examples/test-mh/mininet/simple_sdx.py
+```
 
-    $ sudo python ~/endeavour/examples/test-mh/mininet/
+### Run everything else
+```bash
+$ cd ~
+$ ./endeavour/launch.sh test-mh 3
+```
 
-Open a second terminal, go to the iSDX folder, checkout the branch mh-ctrlr, 
-and run the controller:
+This will start the following parts:
 
-    $ cd ~/iSDX
-    $ git checkout mh-ctrlr
-    $ cd flanc && ryu-manager refmon.py --refmon-config ~/endeavour/examples/test-mh/config/sdx_global.cfg
-    
-These steps should install the default flows (non matching packets are sent to 
-the controller), in the respectives switches and tables.  
+#### RefMon (Fabric Manager)
+```bash
+$ cd ~/iSDX/flanc
+$ ryu-manager refmon.py --refmon-config ~/endeavour/examples/test-mh/config/sdx_global.cfg &
+$ sleep 1
+```
 
-You can also try to run the uctrl module (Umbrella Control). 
+The RefMon module is based on Ryu. It listens for forwarding table modification instructions from the participant controllers and the IXP controller and installs the changes in the switch fabric. It abstracts the details of the underlying switch hardware and OpenFlow messages from the participants and the IXP controllers and also ensures isolation between the participants. Moreover, in the multi-hop scenario it decides in which switches the participants policies are installed. So far, it installs inbound polices in every edge of the fabric, while outbounds are installed in the respective participant edges.
 
-    $ cd ~/endeavour
-    $ python ./uctrl.py ~/endeavour/examples/test-mh/config/sdx_global.cfg
+#### xctrl (IXP Controller)
+```bash
+$ cd ~/iSDX/xctrl
+$ python xctrl.py ~/endeavour/examples/test-mh/config/sdx_global.cfg
+```
 
-If you run it while the controller is running, you shall see on the controller the flows sent by uctrl. 
+The IXP controller initializes the sdx fabric and installs all static default forwarding rules. 
+
+#### uctrl (Umbrella Controller) (Still not sure if it will be joined with the IXP controller)
+
+```bash
+$ cd ~/endeavour/uctrl
+$ python uctrl.py ~/endeavour/examples/test-mh/config/sdx_global.cfg
+```
+
+The Umbrella Controller installs flows to handle ARPs and traffic after processing on iSDX tables. Based on the destination, it encodes the path a packet will follow in the fabric on its destination MAC address. When the packet reaches the last hop, the real destination MAC address is rewritten. It also guarantees that ARPs from the fabric, queries and replies, reach the ARP relay and the respective participants, eliminating the need of broadcasts.
+
+#### arpproxy (ARP Relay)
+```bash
+$ cd ~/iSDX/arproxy
+$ sudo python arproxy.py test-mh &
+$ sleep 1
+```
+
+This module receives ARP requests from the IXP fabric and it relays them to the corresponding participant's controller. It also receives ARP replies from the participant controllers which it relays to the IXP fabric. 
+
+#### xrs (BGP Relay)
+```bash
+$ cd ~/iSDX/xrs
+$ sudo python route_server.py test-mh &
+$ sleep 1
+```
+
+The BGP relay is based on ExaBGP and is similar to a BGP route server in terms of establishing peering sessions with the border routers. Unlike a route server, it does not perform any route selection. Instead, it multiplexes all BGP routes to the participant controllers.
+
+#### pctrl (Participant SDN Controller)
+```bash
+$ cd ~/iSDX/pctrl
+$ sudo python participant_controller.py test-mh 1 &
+$ sudo python participant_controller.py test-mh 2 &
+$ sudo python participant_controller.py test-mh 3 &
+$ sleep 1
+```
+
+Each participant SDN controller computes a compressed set of forwarding table entries, which are installed into the inbound and outbound switches via the fabric manager, and continuously updates the entries in response to the changes in SDN policies and BGP updates. The participant controller receives BGP updates from the BGP relay. It processes the incoming BGP updates by selecting the best route and updating the RIBs. The participant controller also generates BGP announcements destined to the border routers of this participant, which are sent to the routers via the BGP relay.
+
+#### ExaBGP
+```bash
+$ cd ~/iSDX
+$ exabgp examples/test-mh/config/bgp.conf
+```
+
+It is part of the `xrs` module itself and it handles the BGP sessions with all the border routers of the SDX participants.
+
+## Testing the setup
+
+### Test 1
+
+Outbound policy of a1: match(tcp_port=80) >> fwd(b1)
+
+```bash
+mininext> h1_b1 iperf -s -B 140.0.0.1 -p 80 &  
+mininext> h1_a1 iperf -c 140.0.0.1 -B 100.0.0.1 -p 80 -t 2
+```
+
+### Test 2
+
+Outbound policy of a1: match(tcp_port=4321) >> fwd(c)
+and Inbound policy of c: match(tcp_port=4321) >> fwd(c1)
+
+```bash
+mininext> h1_c1 iperf -s -B 140.0.0.1 -p 4321 &
+mininext> h1_a1 iperf -c 140.0.0.1 -B 100.0.0.1 -p 4321 -t 2  
+```
+
+### Test 3 
+
+Outbound policy of a1: match(tcp_port=4322) >> fwd(c)
+and Inbound policy of c: match(tcp_port=4322) >> fwd(c2)
+
+```bash
+mininext> h1_c2 iperf -s -B 140.0.0.1 -p 4322 &  
+mininext> h1_a1 iperf -c 140.0.0.1 -B 100.0.0.1 -p 4322 -t 2  
+```
+
+## Cleanup
+Run the `clean` script:
+```bash
+$ sh ~/iSDX/pctrl/clean.sh
+```
+
+### Note
+Always check with ```route``` whether ```a1``` sees ```140.0.0.0/24``` and ```150.0.0.0/24```, ```b1```/```c1```/```c2``` see ```100.0.0.0/24``` and ```110.0.0.0/24```
