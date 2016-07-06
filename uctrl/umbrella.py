@@ -142,7 +142,7 @@ class Umbrella(object):
     def handle_load_balancer(self, rule_type):
 
         # single check
-        match_byte1 = [0, 0, 0, "10000000"]
+        match_byte1 = [0, 0, 0, "11000000"]
         id_matcher1 = self.lbal.init_match(match_byte1)
         print ("id_matcher1: %s") % id_matcher1
         #self.lbal.set_core_match(self.config.cores, id_matcher1)
@@ -150,6 +150,7 @@ class Umbrella(object):
         # multi check
         match_byte2 = [0, 0, 0, "01000000"]
         match_byte3 = [0, 0, 0, "00100000"]
+        # rueckgabe als liste mit variabler anzahl
         id_matcher2, id_matcher3 = self.lbal.init_multi_match(match_byte2, match_byte3)
         print ("id_matcher2: %s") % id_matcher2
         print ("id_matcher3: %s") % id_matcher3
@@ -170,7 +171,7 @@ class Umbrella(object):
 
 
                 # Build Instruction Meta-Information and Goto-Table
-                instructions = {"meta": metadata, "goto": ["umbrella-edge"]}
+                instructions = {"meta": metadata, "fwd": ["umbrella-edge"]}
                 #print("match: %s" % match)
 
                 # Send for every Core to every Edge
