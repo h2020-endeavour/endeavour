@@ -121,8 +121,8 @@ It is part of the `xrs` module itself and it handles the BGP sessions with all t
 Outbound policy of a1: match(tcp_port=80) >> fwd(b1)
 
 ```bash
-mininext> h1_b1 iperf -s -B 140.0.0.1 -p 80 &  
-mininext> h1_a1 iperf -c 140.0.0.1 -B 100.0.0.1 -p 80 -t 2
+mininext> h1_b1 iperf -s -B 120.0.0.1 -p 80 &  
+mininext> h1_a1 iperf -c 120.0.0.1 -B 100.0.0.1 -p 80 -t 2
 ```
 
 ### Test 2
@@ -152,4 +152,4 @@ $ sh ~/iSDX/pctrl/clean.sh
 ```
 
 ### Note
-Always check with ```route``` whether ```a1``` sees ```140.0.0.0/24``` and ```150.0.0.0/24```, ```b1```/```c1```/```c2``` see ```100.0.0.0/24``` and ```110.0.0.0/24```
+Always check with ```route``` whether ```a1``` sees ```120.0.0.0/24 ```, ```130.0.0.0/24````, ```140.0.0.0/24``` and ```150.0.0.0/24``` - ```b1``` sees ```100.0.0.0/24```, ```110.0.0.0/24```, ```140.0.0.0/24``` and ```150.0.0.0/24 ```` - ```c1 ```/```c2 ``` see ```100.0.0.0/24```, ```110.0.0.0.0/24```, ```120.0.0.0/24``` and ```130.0.0.0/24```
