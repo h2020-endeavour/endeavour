@@ -167,16 +167,12 @@ class Umbrella(object):
                 # Decision for Match is core_id
                 core_id = self.config.cores[core]
 
-                # single check field
-                #match, metadata = self.lbal.get_ip_match(core_id, 'ipv4_src')
-
                 # multi check field
                 match, metadata = self.lbal.get_ip_multi_match(core_id, ['ipv4_src','ipv4_dst'])
 
 
                 # Build Instruction Meta-Information and Goto-Table
                 instructions = {"meta": metadata, "fwd": ["umbrella-edge"]}
-                #print("match: %s" % match)
 
                 # Send for every Core to every Edge
                 self.fm_builder.add_flow_mod("insert", rule_type, LB_PRIORITY, match, instructions, self.config.dpid_2_name[edge]) 
