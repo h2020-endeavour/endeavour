@@ -154,7 +154,7 @@ class Umbrella(object):
         # multi check
         match_byte2 = [0, 0, 0, "01000000"]
         match_byte3 = [0, 0, 0, "00100000"]
-        # rueckgabe als liste mit variabler anzahl
+        
         id_matcher2, id_matcher3 = self.lbal.init_multi_match(match_byte2, match_byte3)
         print ("id_matcher2: %s") % id_matcher2
         print ("id_matcher3: %s") % id_matcher3
