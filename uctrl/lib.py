@@ -21,7 +21,9 @@ class Config(object):
         # TODO: do I really need all this information?
         self.dpids = {}
         self.dpid_2_name = {}
+        self.cores = {} # refactor?
         self.core_edge = {}
+        self.edges = {} # refactor?
         self.edge_peers = {}
         self.edge_to_edge = {}
         self.edge_core = {}
@@ -55,7 +57,9 @@ class Config(object):
             if "fabric options" in config["RefMon Settings"]:
                 datapaths = config["RefMon Settings"]["fabric options"]["dpids"]
                 edges = {x:datapaths[x] for x in datapaths if x.find('edge') == 0}
+                self.edges = edges # refactor?
                 cores = {x:datapaths[x] for x in datapaths if x.find('core') == 0}
+                self.cores = cores # refactor?
 
             if "dpids" in config["RefMon Settings"]["fabric options"]:
                     self.dpids = config["RefMon Settings"]["fabric options"]["dpids"]
