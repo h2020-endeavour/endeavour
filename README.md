@@ -48,7 +48,7 @@ $ sudo python endeavour/examples/test-mh/mininet/simple_sdx.py
 ```bash
 $ cd ~
 $ ./endeavour/launch.sh test-mh 3 
-$ #./endeavour/launch.sh --status test-mh 3 if you want the stats app to be started.
+$ #./endeavour/launch.sh --stats test-mh 3 if you want the stats app to be started.
 ```
 
 This will start the following parts:
