@@ -8,11 +8,12 @@ The tests from the setup are the same from the Multiple table with
 a single switch scenario.
 
 Before starting the tests, make sure to checkout the branch mh-ctrl in the 
-iSDX repository of endeavour.
+iSDX repository of endeavour. 
 
 ```bash
 $ cd ~/iSDX
 $ git checkout mh-ctrl
+$ #git checkout add-grafana (if you want visualization)
 ```bash
 
 ### Log Server
@@ -46,7 +47,8 @@ $ sudo python endeavour/examples/test-mh/mininet/simple_sdx.py
 ### Run everything else
 ```bash
 $ cd ~
-$ ./endeavour/launch.sh test-mh 3
+$ ./endeavour/launch.sh test-mh 3 
+$ #./endeavour/launch.sh --status test-mh 3 if you want the stats app to be started.
 ```
 
 This will start the following parts:
