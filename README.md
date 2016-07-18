@@ -3,20 +3,34 @@
 Instructions to test the current code.
 
 ## Running the setup
-The test-mh scenario has been wrapped in a launch.sh shell script.
+The test-mh scenario has been wrapped in a tm-launch.sh shell script.
 The tests from the setup are the same from the Multiple table with
 a single switch scenario.
 
 Before starting the tests, make sure to checkout the branch mh-ctrl in the 
 iSDX repository of endeavour. 
 
+## tmux script
+This script will launch a tmux session with four windows running the components of the ENDEAVOUR platform. 
+Login to the vagrant VM and run the following command: 
+
+```bash
+./endeavour/tm-launch.sh test-mh
+```
+
+
+As an alternative one can also start each component individually following the intructions below:
+
+## Alternative Setup
+
 ```bash
 $ cd ~/iSDX
 $ git checkout mh-ctrl
 $ #git checkout add-grafana (if you want visualization)
-```bash
+```
 
 ### Log Server
+
 ```bash
 $ cd ~
 $ ./iSDX/launch.sh test-mh 1
