@@ -26,10 +26,6 @@ OFPST_FLOW reply (OF1.3) (xid=0x2):
 
 ```
 
-### open questions:
-1. What is the purpose of rule with cookie=0x35? Who has 172.0.0.1?
-
-
 ## table 1 - outbound
 purpose of this table: 
 
@@ -90,8 +86,6 @@ OFPST_FLOW reply (OF1.3) (xid=0x2):
  cookie=0x7e, duration=69.939s, table=4, n_packets=213, n_bytes=16350, priority=10,ip,nw_src=0.0.0.0/0.0.0.64,nw_dst=0.0.0.32/0.0.0.32 actions=write_metadata:0x20/0xffffffff,goto_table:5
  cookie=0x7d, duration=69.939s, table=4, n_packets=145, n_bytes=12522, priority=10,ip,nw_src=0.0.0.64/0.0.0.64,nw_dst=0.0.0.0/0.0.0.32 actions=write_metadata:0x10/0xffffffff,goto_table:5
 ```
-### open questions /issues:
-1. no empty match forwarding yet (TODO)
 
 
 ## table 5 - umbrella-edge
