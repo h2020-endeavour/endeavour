@@ -3,6 +3,7 @@
 BASE=~/endeavour
 BASE_ISDX=~/iSDX
 LOG_DIR=regress/regress.$$
+MONGODB_DIR=/data/db
 echo "Logging to $LOG_DIR"
 mkdir -p $LOG_DIR
 
@@ -64,7 +65,10 @@ do
         exit 1
     fi
 done
-
+if [ ! -d "$MONGODB_DIR" ]; then
+  # Create mongodb directory before launching tests
+  mkdir -p $MONGODB_DIR
+fi
 count=1
 (( pad = $(echo $LOOPCOUNT | wc -c) - 1 ))
 while (( count <= LOOPCOUNT ))
@@ -119,6 +123,9 @@ do
 		cd $BASE_ISDX/flanc
 		ryu-manager ryu.app.ofctl_rest refmon.py --refmon-config $EXAMPLES/$TEST/config/sdx_global.cfg >/dev/null 2>&1 &
 		#sleep 2
+
+		echo starting mongo daemon
+		sudo mongod --dbpath $MONGODB_DIR &
 
 		echo starting xctrl
 		cd $BASE_ISDX/xctrl/
@@ -201,6 +208,7 @@ do
 		sudo killall exabgp
 		sudo fuser -k 6633/tcp
 		python ~/iSDX/pctrl/clean_mongo.py
+		sudo killall mongod
 		sudo rm -f ~/iSDX/xrs/ribs/*.db
 		) >/dev/null 2>&1
 
