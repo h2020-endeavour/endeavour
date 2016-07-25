@@ -25,7 +25,7 @@ As an alternative one can also start each component individually following the i
 
 ```bash
 $ cd ~/iSDX
-$ git checkout mh-ctrl
+$ git checkout mh-ctrlr
 $ #git checkout add-grafana (if you want visualization)
 ```
 
