@@ -152,8 +152,8 @@ class Umbrella(object):
         #self.lbal.set_core_match(self.config.cores, id_matcher1)
         
         # multi check
-        match_byte2 = [0, 0, 0, "01000000"]
-        match_byte3 = [0, 0, 0, "00100000"]
+        match_byte2 = [0, 0, 0, "00000001"]
+        match_byte3 = [0, 0, 0, "00000001"]
         
         id_matcher2, id_matcher3 = self.lbal.init_multi_match(match_byte2, match_byte3)
         print ("id_matcher2: %s") % id_matcher2
