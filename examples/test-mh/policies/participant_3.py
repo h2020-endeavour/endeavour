@@ -26,7 +26,7 @@
             "cookie": 3,
             "match": 
             {
-                "ip_src": 100.0.0.1
+                "tcp_dst": 4323
             },
             "action": 
             {
