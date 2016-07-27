@@ -172,7 +172,7 @@ class Umbrella(object):
 
 
                 # Build Instruction Meta-Information and Goto-Table
-                instructions = {"meta": metadata, "fwd": ["umbrella-edge"]}
+                instructions = {"meta": metadata}
 
                 # Send for every Core to every Edge
                 self.fm_builder.add_flow_mod("insert", rule_type, LB_PRIORITY, match, instructions, self.config.dpid_2_name[edge]) 
