@@ -26,7 +26,7 @@
             "cookie": 3,
             "match": 
             {
-                "tcp_dst": 4323
+                "eth_src": '08:00:27:89:3b:9f'
             },
             "action": 
             {
