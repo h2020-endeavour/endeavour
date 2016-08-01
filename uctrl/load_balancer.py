@@ -75,7 +75,7 @@ class IP_LBalancer(Load_Balancer):
         #debug print
         #print ("allset: %s ") % allset -----------------
 
-
+        # look only on the 4th byte
         for match in set(set_array[3]):
             self.match_list.append(match)
         return self.match_list

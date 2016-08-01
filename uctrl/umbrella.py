@@ -144,21 +144,14 @@ class Umbrella(object):
 
     # Just send load balancer flows to umbrella. 
     def handle_load_balancer(self, rule_type):
-
-        # single check
-        match_byte1 = [0, 0, 0, "11000000"]
-        id_matcher1 = self.lbal.init_match(match_byte1)
-        print ("id_matcher1: %s") % id_matcher1
-        #self.lbal.set_core_match(self.config.cores, id_matcher1)
         
         # multi check
+        match_byte1 = [0, 0, 0, "00000001"]
         match_byte2 = [0, 0, 0, "00000001"]
-        match_byte3 = [0, 0, 0, "00000001"]
         
-        id_matcher2, id_matcher3 = self.lbal.init_multi_match(match_byte2, match_byte3)
-        print ("id_matcher2: %s") % id_matcher2
-        print ("id_matcher3: %s") % id_matcher3
-        self.lbal.set_core_multi_match(self.config.cores, [id_matcher2, id_matcher3])
+        # create id_matches - init core multi match with id_matches
+        id_matcher1, id_matcher2 = self.lbal.init_multi_match(match_byte1, match_byte2)
+        self.lbal.set_core_multi_match(self.config.cores, [id_matcher1, id_matcher2])
 
         # Rule for every Edge
         for edge in self.config.edge_core:
@@ -167,9 +160,8 @@ class Umbrella(object):
                 # Decision for Match is core_id
                 core_id = self.config.cores[core]
 
-                # multi check field
+                # multi check field(s)
                 match, metadata = self.lbal.get_ip_multi_match(core_id, ['ipv4_src','ipv4_dst'])
-
 
                 # Build Instruction Meta-Information and Goto-Table
                 instructions = {"meta": metadata, "fwd": ["umbrella-edge"]}
