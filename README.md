@@ -2,6 +2,17 @@
 
 Instructions to test the current code.
 
+## Loggin to the ENDEAVOUR VM
+Make sure that you are in the root folder containing all the files of this repo. The following command will start the ENDEAVOUR VM
+```
+vagrant up
+```
+
+The following command is used to log in to the vagrant VM
+```
+vagrant ssh
+```
+
 ## Running the setup
 The test-mh scenario has been wrapped in a tm-launch.sh shell script.
 The tests from the setup are the same from the Multiple table with
