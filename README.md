@@ -2,6 +2,24 @@
 
 Instructions to test the current code.
 
+## Running with Torch
+
+Torch has been adapted to run in Multi-Hop mode. Here is how to run it.
+
+```bash
+$ cd ~/iSDX/test
+$ sh buildall.sh
+$ sudo bash startup.sh test1-mh
+```
+
+The above will run the system based on the test specification at https://github.com/h2020-endeavour/iSDX/blob/master/test/specs/test1-mh.spec
+
+Read the Torch documentation at
+https://github.com/h2020-endeavour/iSDX/blob/master/test/README.md
+
+
+# Previous instructions
+
 ## Running the setup
 The test-mh scenario has been wrapped in a tm-launch.sh shell script.
 The tests from the setup are the same from the Multiple table with
