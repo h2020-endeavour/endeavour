@@ -12,6 +12,13 @@ $ sh buildall.sh
 $ sudo bash startup.sh test1-mh
 ```
 
+Torch runs its tests and then quits. If you want to run in interactive mode, run as:
+```bash
+$ sudo bash startup.sh -i test1-mh
+```
+
+
+
 The above will run the system based on the test specification at https://github.com/h2020-endeavour/iSDX/blob/master/test/specs/test1-mh.spec
 
 Read the Torch documentation at
