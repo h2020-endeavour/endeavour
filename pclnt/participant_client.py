@@ -69,7 +69,7 @@ def main():
     policy_file = os.path.join(base_path, args.policy_file)
 
     # locate config file
-    base_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(args.policy_file)), "config"))
+    base_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(args.policy_file)), "..", "config"))
     config_file = os.path.join(base_path, "sdx_global.cfg")
 
     # logger
