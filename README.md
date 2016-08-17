@@ -12,12 +12,20 @@ $ sh buildall.sh
 $ sudo bash startup.sh test1-mh
 ```
 
+If you want to run the stats app with torch do:
+
+```bash
+$ sudo bash startup.sh --stats test1-mh
+```
+**Because configuration files for monitoring are not created by torch,
+it is important to notice the need to add them to the folder of test1-mh/config/. 
+You can find examples in /examples/test-mh/config/. You will need one config 
+file for every switch that should be monitored.** 
+
 Torch runs its tests and then quits. If you want to run in interactive mode, run as:
 ```bash
 $ sudo bash startup.sh -i test1-mh
 ```
-
-
 
 The above will run the system based on the test specification at https://github.com/h2020-endeavour/iSDX/blob/master/test/specs/test1-mh.spec
 
