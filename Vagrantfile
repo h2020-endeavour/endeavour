@@ -29,6 +29,9 @@ Vagrant.configure("2") do |config|
   	config.proxy.no_proxy = "localhost,127.0.0.1"
   end
 
+  config.vm.network :forwarded_port, guest:6633, host:6637 # open flow controller
+  config.vm.network :forwarded_port, guest:3000, host:3000 # grafana
+
   ## Provisioning
   config.vm.provision :shell, privileged: true, :inline => "apt-get update && apt-get install -y git python-oslo.config"
   config.vm.provision :shell, privileged: false, :inline => "git clone https://github.com/h2020-endeavour/iSDX.git"
@@ -36,6 +39,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision :shell, privileged: false, :inline => "cd iSDX && bash setup/ovs-setup.sh"
   config.vm.provision :shell, privileged: false, :inline => "cd iSDX && bash setup/mininet-setup.sh"
   config.vm.provision :shell, privileged: false, :inline => "cd iSDX && bash setup/ryu-setup.sh"
+  config.vm.provision :shell, privileged: false, :path => "setup/grafana-setup.sh"
   config.vm.provision :shell, privileged: false, :inline => "cd iSDX && bash setup/sdx-setup.sh"
 
   ## SSH config
