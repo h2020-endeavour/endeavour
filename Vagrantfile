@@ -39,7 +39,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision :shell, privileged: false, :inline => "cd iSDX && bash setup/ovs-setup.sh"
   config.vm.provision :shell, privileged: false, :inline => "cd iSDX && bash setup/mininet-setup.sh"
   config.vm.provision :shell, privileged: false, :inline => "cd iSDX && bash setup/ryu-setup.sh"
-  config.vm.provision :shell, privileged: false, :path => "setup/grafana-setup.sh"
+  config.vm.provision :shell, privileged: false, :path => "cd iSDX && bash setup/grafana-setup.sh"
   config.vm.provision :shell, privileged: false, :inline => "cd iSDX && bash setup/sdx-setup.sh"
 
   ## SSH config
