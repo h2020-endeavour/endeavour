@@ -50,7 +50,6 @@ class ParticipantClient(object):
     def process_handler(self, policy_file, action, id_list):
         # Connect to participant client
         self.client = self.cfg.get_participant_client(self.id, self.logger)
-        print id_list
         # Get data from file
         data = {}
         policies = {}
@@ -59,7 +58,6 @@ class ParticipantClient(object):
         
         # Send data
         self.logger.debug("participant_client(%s): send: %s" % (self.id, data))
-        print data
         self.client.send(data)
 
 
