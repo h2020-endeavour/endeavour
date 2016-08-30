@@ -37,7 +37,7 @@ class ParticipantClient(object):
             policies=json.load(f)
             
             for policy in policies['inbound']:
-                if policy['cookie'] in id_list:
+                if str(policy['cookie']) in id_list:
                     add_policy.append(policy)
 
 
