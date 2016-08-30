@@ -4,7 +4,7 @@ Instructions to test the current code.
 
 ## Running with Torch
 
-Torch has been adapted to run in Multi-Hop mode. Here is how to run it.
+Torch has been adapted to run in Multi-Hop mode. Here is how to run it. 
 
 ```bash
 $ cd ~/iSDX/test
@@ -32,6 +32,24 @@ The above will run the system based on the test specification at https://github.
 Read the Torch documentation at
 https://github.com/h2020-endeavour/iSDX/blob/master/test/README.md
 
+# Demo of use cases
+
+## Advanced Blackholing demo
+The advanced blackholing demo uses [test3-mh-bh.spec](https://github.com/h2020-endeavour/iSDX/blob/master/test/specs/test3-mh-bh.spec). 
+
+The Grafana dashboard includes a blackholing-demo dashboard to visualize the traffic during the demo. The dashboard is available after reprovisioning of the VM: 
+
+```bash
+$ vagrant provision
+``` 
+
+Use the following instructions to run the blackholing demo it:
+
+```bash
+$ cd ~/iSDX/test
+$ sh buildall.sh
+$ sudo bash startup.sh --stats test3-mh-bh
+```
 
 # Previous instructions
 
