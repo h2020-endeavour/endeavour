@@ -21,7 +21,7 @@ class Monitor(object):
         try:
             table_id =  config.tables['monitor']
         except KeyError, e:
-            print "Monitoring table does not exist in the sdx_global.cfg file! - Add a table named %s." % str(e) 
+            print "Monitoring table does not exists in the sdx_global.cfg file! - Add a table named %s." % str(e) 
         # refmon IP is the address of the controller
         # For now, port is static 8080
         controller = config.refmon["IP"] + ":8080"
