@@ -54,9 +54,10 @@ $ sudo bash startup.sh --stats test3-mh-bh
 
 The monitoring controller is being developed in the monitor branch. 
 
+```bash
 $ cd ~/iSDX && git checkout monitoring
 $ cd ~/endeavour && git checkout monitor
-
+```
 The launch script and the torch startup scripts were updated to init 
 the mctrl. The only thing required is to add the specification of flows in the config directory of the example. The specification of flows is based on the REST API of Ryu, but limits the flows to a single action and table.
 You can find an example [here](https://github.com/h2020-endeavour/endeavour/blob/monitor/examples/test-mh/config/monitor_flows.cfg)   
