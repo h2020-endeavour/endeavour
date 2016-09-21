@@ -41,6 +41,9 @@ case $2 in
         fi
         cd $SDX_DIR/flanc
         ryu-manager $STATS_APP ryu.app.ofctl_rest refmon.py --refmon-config $RUN_DIR/examples/$TEST_DIR/config/sdx_global.cfg &
+        sleep 1
+        cd $RUN_DIR/mctrl
+        python mctrl.py $RUN_DIR/examples/$TEST_DIR 
         echo "DONE"
         sleep 1
 
