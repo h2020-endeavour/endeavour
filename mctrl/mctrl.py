@@ -18,9 +18,11 @@ from monitor import Monitor
 # Just in case of need in the future
 from xctrl.client import RefMonClient # Socket
 from lib import Config
+from time import sleep
 
 
 def main():
+    sleep(5) #added a sleep to avoid "Connection refused" or "404" errors
     parser = argparse.ArgumentParser()
     parser.add_argument('dir', help='the directory of the example')
     args = parser.parse_args()
