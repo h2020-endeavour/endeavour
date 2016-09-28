@@ -54,7 +54,7 @@ $ sudo bash startup.sh --stats test3-mh-bh
 ## In/Out-bound Traffic-Engineering demo
 The in/out-bound TE demo uses [test1-mh-te.spec](https://github.com/h2020-endeavour/iSDX/tree/monitoring/test/test1-mh-te.spec), which is described [here](https://github.com/h2020-endeavour/iSDX/tree/monitoring/test#configuration-test1-mh-te).
 
-The Grafana dashboard includes a te-demo dashboard to visualize the traffic during the demo. The dashboard must be imported from the web interface using this file (https://github.com/h2020-endeavour/iSDX/blob/monitoring/test/inbound_outbound_te_dashboard.py)
+The Grafana dashboard includes a te-demo dashboard to visualize the traffic during the demo. The dashboard must be imported from the web interface using [this file](https://github.com/h2020-endeavour/iSDX/blob/monitoring/test/inbound_outbound_te_dashboard.py)
 
 Use the following instructions to run the blackholing demo it:
 
