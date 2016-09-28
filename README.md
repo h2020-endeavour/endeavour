@@ -56,7 +56,7 @@ The in/out-bound TE demo uses [test1-mh-te.spec](https://github.com/h2020-endeav
 
 The Grafana dashboard includes a te-demo dashboard to visualize the traffic during the demo. The dashboard must be imported from the web interface using [this file](https://github.com/h2020-endeavour/iSDX/blob/monitoring/test/inbound_outbound_te_dashboard.py)
 
-Use the following instructions to run the blackholing demo it:
+Use the following instructions to run the in/out-bound TE demo it:
 
 ```bash
 $ cd ~/iSDX/test
