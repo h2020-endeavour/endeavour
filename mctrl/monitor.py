@@ -3,6 +3,7 @@
 import os
 import sys
 
+
 isdx_folder = "iSDX"
 home = os.path.expanduser("~/")
 isdx_path = home + isdx_folder
@@ -11,9 +12,11 @@ if isdx_path not in sys.path:
 import util.log
 
 from flowpusher import FlowPusher
+from rest import MonitorApp 
 
 class Monitor(object):
-    def __init__(self, config, flows, sender, logger):
+    
+    def __init__(self, config, flows, sender, logger, **kwargs):
         self.logger = logger
         self.sender = sender
         self.config = config
@@ -28,4 +31,10 @@ class Monitor(object):
         self.flow_pusher = FlowPusher(flows, table_id, controller)
 
     def start(self):
-       self.flow_pusher.push_flows()
+        # Push initial monitoring flows
+        self.flow_pusher.push_flows()
+        # Start REST 
+        mon = MonitorApp(self)
+        mon.app.run()
+
+
