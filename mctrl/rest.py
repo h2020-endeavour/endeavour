@@ -10,9 +10,16 @@ class MonitorApp(object):
     def setup(self):
         @self.app.route('/anomaly', methods = ['POST'])
         def api_anomaly():
-            data = json.dumps(request.json)
+            print request.json
+            data = request.json
             if request.headers['Content-Type'] == 'application/json':
-                return Response("OK\n" + data, status=200)
+                success = self.app.monitor.process_data(data) 
+                if success:
+                    return Response("OK\n" + data, status=200)
+                else:
+                    return Response("BAD REQUEST\n" + data, status=400)
             else:
                 return Response("Unsupported media type\n" + data, status=415)
 
+
+    
