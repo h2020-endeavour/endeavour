@@ -13,7 +13,7 @@ class MonitorApp(object):
             data = request.json
             if request.headers['Content-Type'] == 'application/json':
                 success = self.app.monitor.process_anomaly_data(data) 
-                return handle_response(success)
+                return self.handle_response(success, data)
             else:
                 return Response("Unsupported media type\n" + data, status=415)
 
@@ -22,14 +22,15 @@ class MonitorApp(object):
             data = request.json
             if request.headers['Content-Type'] == 'application/json':
                 success = self.app.monitor.process_monitor_flows(data) 
-                return handle_response(success)
+                return self.handle_response(success, data)
             else:
                 return Response("Unsupported media type\n" + data, status=415)
 
 
-    def handle_response(self, success):
+    def handle_response(self, success, data):
+        json_data = json.dumps(data)
         if success:
-            return Response("OK\n" + data, status=status)
+            return Response("OK\n" + json_data, status=200)
         else:
-            return Response("BAD REQUEST\n" + data, status=status)
+            return Response("BAD REQUEST\n" + json_data, status=400)
             
