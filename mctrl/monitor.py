@@ -40,31 +40,32 @@ class Monitor(object):
         # Build initial monitoring flows
         self.monitor_flows_builder(flows)
 
-    def process_data(self, data):
+    def process_anomaly_data(self, data):
         # Anomaly detection
         if "anomalies" in data:
             self.block_anomaly_traffic(data["switch"], data["anomalies"])
-        # Receives a request to add a new monitoring flow
-        elif "monitor_flows" in data:
-            # TODO: implement deletion
+            return True
+        return False
+
+    def process_monitor_flows(self, data):
+        if "monitor_flows" in data:
             self.monitor_flows_builder(data)
             self.sender.send(self.fm_builder.get_msg())
-        else:
-            # Message cannot be processed by monitor  
-            return False
+            return True
+        return False
 
+    # TODO: implement deletion
     def monitor_flows_builder(self, flows):
-        # Forward the packets to the initial table of the pipeline
-        actions = {"meta": metadata, "fwd": ["main-in"]}
-        for flow in self.flows["flows"]:
+        # Forward the packets to the Monitor table of the pipeline
+        actions = {"fwd": ["main-in"]}
+        for flow in flows["monitor_flows"]:
             dps = flow["dpids"]
-            self.set_table_id(flow)
             match = flow["match"]
-            priority = flow[priority]
+            priority = flow["priority"]
             # Flow cookie is a tuple (cookie, cookie_mask)
             cookie = (flow["cookie"], flow["cookie_mask"])
             for dp in dps:
-                self.fm_builder.add_flow_mod("insert", "monitor", priority, match, action, self.config.dpid_2_name[dp], cookie)
+                self.fm_builder.add_flow_mod("insert", "monitor", priority, match, actions, self.config.dpid_2_name[dp], cookie)
 
 
     def block_anomaly_traffic(self, switch, anomalies):
