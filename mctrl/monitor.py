@@ -11,7 +11,6 @@ if isdx_path not in sys.path:
     sys.path.append(isdx_path)
 import util.log
 
-from flowpusher import FlowPusher
 from rest import MonitorApp 
 from xctrl.flowmodmsg import FlowModMsgBuilder
 
@@ -38,23 +37,38 @@ class Monitor(object):
             table_id =  config.tables['monitor']
         except KeyError, e:
             print "Monitoring table does not exists in the sdx_global.cfg file! - Add a table named %s." % str(e) 
-        # refmon IP is the address of the controller
-        # For now, port is static 8080
-        controller = config.refmon["IP"] + ":8080"
-        self.flow_pusher = FlowPusher(flows, table_id, controller)
-
+        # Build initial monitoring flows
+        self.monitor_flows_builder(flows)
 
     def process_data(self, data):
         # Anomaly detection
         if "anomalies" in data:
             self.block_anomaly_traffic(data["switch"], data["anomalies"])
+        # Receives a request to add a new monitoring flow
+        elif "monitor_flows" in data:
+            # TODO: implement deletion
+            self.monitor_flows_builder(data)
+            self.sender.send(self.fm_builder.get_msg())
         else:
             # Message cannot be processed by monitor  
             return False
 
+    def monitor_flows_builder(self, flows):
+        # Forward the packets to the initial table of the pipeline
+        actions = {"meta": metadata, "fwd": ["main-in"]}
+        for flow in self.flows["flows"]:
+            dps = flow["dpids"]
+            self.set_table_id(flow)
+            match = flow["match"]
+            priority = flow[priority]
+            # Flow cookie is a tuple (cookie, cookie_mask)
+            cookie = (flow["cookie"], flow["cookie_mask"])
+            for dp in dps:
+                self.fm_builder.add_flow_mod("insert", "monitor", priority, match, action, self.config.dpid_2_name[dp], cookie)
+
+
     def block_anomaly_traffic(self, switch, anomalies):
         for anomaly in anomalies:
-            print anomaly
             dp = switch
             # key_type = field, point = value of the field.
             match = {anomaly["key_type"]:anomaly["point"]}
@@ -73,13 +87,12 @@ class Monitor(object):
                                             
         # TODO: ADD proper priority
         self.fm_builder.add_flow_mod("insert", "main-in", 1000, match, action, self.config.dpid_2_name[dp])
-                
+        # Push flow now.        
         self.sender.send(self.fm_builder.get_msg())
-        
+
     def start(self):
-        # Should replace flow pusher by fm_builder
-        # self.sender.send(self.fm_builder.get_msg())
-        # self.flow_pusher.push_flows()
+        # Push initial monitoring flows
+        self.sender.send(self.fm_builder.get_msg())
         # Start REST 
         mon = MonitorApp(self)
         mon.app.run()
