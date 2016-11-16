@@ -3,8 +3,8 @@ if [ $1 = '--stats' ]; then
     STATS=1
 fi
 
-RUN_DIR=~/endeavour
-SDX_DIR=~/iSDX
+RUN_DIR=~/endeavour/endeavour
+SDX_DIR=~/endeavour/iSDX
 RIBS_DIR=$SDX_DIR/xrs/ribs
 TEST_DIR=$1
 LOG_FILE=SDXLog.log
@@ -35,6 +35,7 @@ case $2 in
         ;;
 
     (3)
+       
         if [ -n "$STATS" ]; then
             export GAUGE_CONFIG=$RUN_DIR/examples/$TEST_DIR/config/gauge.conf
             STATS_APP=stats/gauge.py
@@ -50,9 +51,6 @@ case $2 in
         cd $SDX_DIR/xctrl
         python xctrl.py $RUN_DIR/examples/$TEST_DIR/config/sdx_global.cfg
 
-        cd $RUN_DIR/uctrl
-        python uctrl.py $RUN_DIR/examples/$TEST_DIR/config/sdx_global.cfg
-
         cd $SDX_DIR/arproxy
         sudo python arproxy.py $RUN_DIR/examples/$TEST_DIR &
         sleep 1
@@ -64,10 +62,9 @@ case $2 in
         cd $SDX_DIR/pctrl
         sudo python participant_controller.py $RUN_DIR/examples/$TEST_DIR 1 &
         sudo python participant_controller.py $RUN_DIR/examples/$TEST_DIR 2 &
-        sudo python participant_controller.py $RUN_DIR/examples/$TEST_DIR 3 &
         sleep 1
 
         cd $SDX_DIR
-        exabgp $RUN_DIR/examples/$TEST_DIR/config/bgp.conf
+        env exabgp.daemon.user=root exabgp.daemon.daemonize=false exabgp  $RUN_DIR/examples/$TEST_DIR/config/bgp.conf 
         ;;
 esac

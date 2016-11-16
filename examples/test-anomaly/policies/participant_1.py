@@ -10,28 +10,6 @@
             {
                 "fwd": 2
             }
-        },
-        {
-            "cookie": 2,
-            "match": 
-            {
-                "tcp_dst": 4321
-            },
-            "action": 
-            {
-                "fwd": 3
-            }
-        },
-        {
-            "cookie": 3,
-            "match": 
-            {
-                "tcp_dst": 4322
-            },
-            "action": 
-            {
-                "fwd": 3
-            }
         }
     ]
 }
