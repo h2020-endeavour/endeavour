@@ -12,7 +12,17 @@ if isdx_path not in sys.path:
 import util.log
 
 from rest import MonitorApp 
+from query import StatsCollector
 from xctrl.flowmodmsg import FlowModMsgBuilder
+
+from influxdb import InfluxDBClient
+
+# TODO: Pass it via configuration.
+INFLUXDB_DB = "sdx"
+INFLUXDB_HOST = "localhost"
+INFLUXDB_PORT = 8086
+INFLUXDB_USER = ""
+INFLUXDB_PASS = ""
 
 ICMP_PROTO = 1
 UDP_PROTO = 17
@@ -31,6 +41,8 @@ class Monitor(object):
         self.logger = logger
         self.sender = sender
         self.config = config
+        # collector is a class to execute queries for network status.
+        self.collector = StatsCollector(InfluxDBClient(host=INFLUXDB_HOST, port=INFLUXDB_PORT, username=INFLUXDB_USER, password=INFLUXDB_PASS, database=INFLUXDB_DB, timeout=10))
         table_id = None
         self.fm_builder = FlowModMsgBuilder(0, self.config.flanc_auth["key"])
         try:
@@ -54,7 +66,8 @@ class Monitor(object):
             return True
         return False
 
-    # TODO: implement deletion
+    # TODO  implement deletion
+    #       implement flow to OSNT.
     def monitor_flows_builder(self, flows):
         # Forward the packets to the Monitor table of the pipeline
         actions = {"fwd": ["main-in"]}
