@@ -62,6 +62,19 @@ The launch script and the torch startup scripts were updated to init
 the mctrl. The only thing required is to add the specification of flows in the config directory of the example. The specification of flows is based on the REST API of Ryu, but limits the flows to a single action and table.
 You can find an example [here](https://github.com/h2020-endeavour/endeavour/blob/monitor/examples/test-mh/config/monitor_flows.cfg)   
 
+## In/Out-bound Traffic-Engineering demo
+The in/out-bound TE demo uses [test1-mh-te.spec](https://github.com/h2020-endeavour/iSDX/tree/monitoring/test/test1-mh-te.spec), which is described [here](https://github.com/h2020-endeavour/iSDX/tree/monitoring/test#configuration-test1-mh-te).
+
+The Grafana dashboard includes a te-demo dashboard to visualize the traffic during the demo. The dashboard must be imported from the web interface using [this file](https://github.com/h2020-endeavour/iSDX/blob/monitoring/test/inbound_outbound_te_dashboard.py)
+
+Use the following instructions to run the in/out-bound TE demo it:
+
+```bash
+$ cd ~/iSDX/test
+$ sh buildall.sh
+$ sudo bash startup.sh --stats test1-mh-te
+```
+
 # Previous instructions
 
 ## Logging to the ENDEAVOUR VM
