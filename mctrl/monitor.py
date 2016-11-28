@@ -86,6 +86,8 @@ class Monitor(object):
             dp = switch
             # key_type = field, point = value of the field.
             match = {anomaly["key_type"]:anomaly["point"]}
+            if match is {}:
+                continue
             # Create an empty action set to drop packets.
             action = {}
             anomaly_id = anomaly["anomaly_id"]
@@ -98,11 +100,15 @@ class Monitor(object):
                 match["ip_proto"] = ICMP_PROTO
             elif anomaly_id == RST_ATK:
                 match["ip_proto"] = TCP_PROTO
+            elif anomaly_id == 0:
+                # Unknown anomaly, do not enforce anything
+                # TODO send a message to alert IXP operator
+                continue
                                             
-        # TODO: ADD proper priority
-        self.fm_builder.add_flow_mod("insert", "main-in", 1000, match, action, self.config.dpid_2_name[dp])
-        # Push flow now.        
-        self.sender.send(self.fm_builder.get_msg())
+            # TODO: ADD proper priority
+            self.fm_builder.add_flow_mod("insert", "main-in", 1000, match, action, self.config.dpid_2_name[dp])
+            # Push flow now.
+            self.sender.send(self.fm_builder.get_msg())
 
     def start(self):
         # Push initial monitoring flows
