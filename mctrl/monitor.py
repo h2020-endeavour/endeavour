@@ -9,7 +9,7 @@ home = os.path.expanduser("~/")
 isdx_path = home + isdx_folder
 if isdx_path not in sys.path:
     sys.path.append(isdx_path)
-import util.log
+#import util.log
 
 from rest import MonitorApp 
 from query import StatsCollector
@@ -27,6 +27,7 @@ INFLUXDB_PASS = ""
 ICMP_PROTO = 1
 UDP_PROTO = 17
 TCP_PROTO = 6
+IP_ETHTYPE = 2048
 
 # Anomalies    
 UDP_SCAN = 1   # 1) UDP Network scan (UDP Network scan targeting one port)
@@ -89,6 +90,7 @@ class Monitor(object):
             if match is {}:
                 continue
             # Create an empty action set to drop packets.
+            match["dl_type"] = IP_ETHTYPE
             action = {}
             anomaly_id = anomaly["anomaly_id"]
 
