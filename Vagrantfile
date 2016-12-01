@@ -34,8 +34,8 @@ Vagrant.configure("2") do |config|
 
   ## Provisioning
   config.vm.provision :shell, privileged: true, :inline => "apt-get update && apt-get install -y git python-oslo.config"
-  config.vm.provision :shell, privileged: false, :inline => "if [ -d 'iSDX' ]; then  rm -r iSDX/; fi"
-  config.vm.provision :shell, privileged: false, :inline => "git clone https://github.com/h2020-endeavour/iSDX.git"
+  #config.vm.provision :shell, privileged: false, :inline => "if [ -d 'iSDX' ]; then  rm -r iSDX/; fi"
+  #config.vm.provision :shell, privileged: false, :inline => "git clone https://github.com/h2020-endeavour/iSDX.git"
   config.vm.provision :shell, privileged: false, :inline => "cd iSDX && bash setup/basic-setup.sh"
   config.vm.provision :shell, privileged: false, :inline => "cd iSDX && bash setup/ovs-setup.sh"
   config.vm.provision :shell, privileged: false, :inline => "cd iSDX && bash setup/mininet-setup.sh"
@@ -49,6 +49,7 @@ Vagrant.configure("2") do |config|
   #config.vm.synced_folder ".", "/home/vagrant/endeavour", type: "rsync",
     #rsync__exclude: ".git/"
   config.vm.synced_folder ".", "/home/vagrant/endeavour"
+  config.vm.synced_folder "../iSDX", "/home/vagrant/iSDX"
   #config.vm.synced_folder ".", "/home/vagrant/endeavour", owner: "quagga", group: "quaggavty"
 
 end
