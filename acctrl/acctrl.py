@@ -34,8 +34,11 @@ def main():
     access_control_flows_file = os.path.join(base_path, "access_control_flows.cfg")
     config = Config(config_file)
     
-    with file(access_control_flows_file) as f:
-        flows = json.load(f)
+    if os.path.exists(access_control_flows_file):
+        with file(access_control_flows_file) as f:
+            flows = json.load(f)
+    else:
+        flows={"access_control_flows" : {}}
 
     # start umbrella fabric manager
     logger = util.log.getLogger('access-control')

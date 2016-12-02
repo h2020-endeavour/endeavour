@@ -8,20 +8,12 @@ class AccessControlApp(object):
         self.setup()
 
     def setup(self):
-        @self.app.route('/anomaly', methods = ['POST'])
-        def api_anomaly():
-            data = request.json
-            if request.headers['Content-Type'] == 'application/json':
-                success = self.app.access_control.process_anomaly_data(data)
-                return self.handle_response(success, data)
-            else:
-                return Response("Unsupported media type\n" + data, status=415)
 
         @self.app.route('/access_control', methods = ['POST'])
         def api_access_control():
             data = request.json
             if request.headers['Content-Type'] == 'application/json':
-                success = self.app.access_control.process_monitor_flows(data)
+                success = self.app.access_control.process_access_control_flows(data)
                 return self.handle_response(success, data)
             else:
                 return Response("Unsupported media type\n" + data, status=415)

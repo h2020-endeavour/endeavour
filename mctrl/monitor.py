@@ -71,6 +71,7 @@ class Monitor(object):
     def monitor_flows_builder(self, flows):
         # Forward the packets to the Monitor table of the pipeline
         actions = {"fwd": ["access-control"]}
+        #actions = {"fwd": ["main-in"]}
         for flow in flows["monitor_flows"]:
             dps = flow["dpids"]
             match = flow["match"]
@@ -100,7 +101,7 @@ class Monitor(object):
                 match["ip_proto"] = TCP_PROTO
                                             
         # TODO: ADD proper priority
-        self.fm_builder.add_flow_mod("insert", "access-control", 1000, match, action, self.config.dpid_2_name[dp])
+        self.fm_builder.add_flow_mod("insert", "monitor", 1000, match, action, self.config.dpid_2_name[dp])
         # Push flow now.        
         self.sender.send(self.fm_builder.get_msg())
 

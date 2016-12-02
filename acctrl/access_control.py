@@ -60,15 +60,24 @@ class AccessControl(object):
     #       implement flow to OSNT.
     def access_control_flows_builder(self, flows):
         # Forward the packets to the Access Control table of the pipeline
-        actions = {"fwd": ["main-in"]}
+        if "access_control_flows" not in flows:
+            return
         for flow in flows["access_control_flows"]:
+            if "action" not in flow:
+                actions = {"fwd": ["main-in"]}
+            else:
+                if "accept" in flow["action"]:
+                    actions = {"fwd": ["main-in"]}
+                else:
+                    actions = flow["action"]
             dps = flow["dpids"]
             match = flow["match"]
             priority = flow["priority"]
             # Flow cookie is a tuple (cookie, cookie_mask)
             cookie = (flow["cookie"], flow["cookie_mask"])
             for dp in dps:
-                self.fm_builder.add_flow_mod("insert", "access_control", priority, match, actions, self.config.dpid_2_name[dp], cookie)
+                print "flow: " + str(flow)
+                self.fm_builder.add_flow_mod("insert", "access-control", priority, match, actions, self.config.dpid_2_name[dp], cookie)
 
 
 
@@ -76,7 +85,7 @@ class AccessControl(object):
         # Push initial monitoring flows
         self.sender.send(self.fm_builder.get_msg())
         # Start REST 
-        mon = AccessControlApp(self)
-        mon.app.run()
+        #mon = AccessControlApp(self)
+        #mon.app.run()
 
 
