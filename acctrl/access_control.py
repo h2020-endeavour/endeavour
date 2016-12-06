@@ -76,7 +76,6 @@ class AccessControl(object):
             # Flow cookie is a tuple (cookie, cookie_mask)
             cookie = (flow["cookie"], flow["cookie_mask"])
             for dp in dps:
-                print "flow: " + str(flow)
                 self.fm_builder.add_flow_mod("insert", "access-control", priority, match, actions, self.config.dpid_2_name[dp], cookie)
 
 
