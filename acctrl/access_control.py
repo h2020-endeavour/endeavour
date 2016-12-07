@@ -64,10 +64,10 @@ class AccessControl(object):
             return
         for flow in flows["access_control_flows"]:
             if "action" not in flow:
-                actions = {"fwd": ["main-in"]}
+                actions = {"fwd": ["load-balancer"]}
             else:
                 if "accept" in flow["action"]:
-                    actions = {"fwd": ["main-in"]}
+                    actions = {"fwd": ["load-balancer"]}
                 else:
                     actions = flow["action"]
             dps = flow["dpids"]

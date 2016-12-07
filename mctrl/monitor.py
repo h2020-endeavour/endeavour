@@ -70,8 +70,8 @@ class Monitor(object):
     #       implement flow to OSNT.
     def monitor_flows_builder(self, flows):
         # Forward the packets to the Monitor table of the pipeline
-        actions = {"fwd": ["access-control"]}
-        #actions = {"fwd": ["main-in"]}
+        #actions = {"fwd": ["access-control"]}
+        actions = {"fwd": ["main-in"]}
         for flow in flows["monitor_flows"]:
             dps = flow["dpids"]
             match = flow["match"]
