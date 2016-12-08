@@ -50,7 +50,8 @@ class Monitor(object):
         except KeyError, e:
             print "Monitoring table does not exists in the sdx_global.cfg file! - Add a table named %s." % str(e) 
         # Build initial monitoring flows
-        self.monitor_flows_builder(flows)
+        if flows != None:
+            self.monitor_flows_builder(flows)
 
     def process_anomaly_data(self, data):
         # Anomaly detection

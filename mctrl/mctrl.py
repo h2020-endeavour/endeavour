@@ -33,15 +33,19 @@ def main():
     # locate the monitor's flows configuration file
     monitor_flows_file = os.path.join(base_path, "monitor_flows.cfg")
     config = Config(config_file)
-    
-    with file(monitor_flows_file) as f:
-        flows = json.load(f)
 
     # start umbrella fabric manager
     logger = util.log.getLogger('monitor')
     logger.info('init')
 
-    # Keep it for now just in case we decide to send messages to Refmon
+    try:
+        with file(monitor_flows_file) as f:
+            flows = json.load(f)
+    except IOError:
+        flows = None
+        logger.info("No file specified for initial flows.")
+
+    
     logger.info('REFMON client: ' + str(config.refmon["IP"]) + ' ' + str(config.refmon["Port"]))
     client = RefMonClient(config.refmon["IP"], config.refmon["Port"], config.refmon["key"])
 
