@@ -31,12 +31,14 @@ Vagrant.configure("2") do |config|
 
   config.vm.network :forwarded_port, guest:6633, host:6637 # open flow controller
   config.vm.network :forwarded_port, guest:3000, host:3000 # grafana
+  config.vm.network :forwarded_port, guest:5551, host:5551 # participant 1 api
+  config.vm.network :forwarded_port, guest:5552, host:5552 # participant 2 api
+  config.vm.network :forwarded_port, guest:5553, host:5553 # participant 3 api
 
   ## Provisioning
   config.vm.provision :shell, privileged: true, :inline => "apt-get update && apt-get install -y git python-oslo.config"
   config.vm.provision :shell, privileged: false, :inline => "if [ -d 'iSDX' ]; then  rm -r iSDX/; fi"
   config.vm.provision :shell, privileged: false, :inline => "git clone https://github.com/h2020-endeavour/iSDX.git"
-  config.vm.provision :shell, privileged: false, :inline => "cd iSDX && git checkout access-control"
   config.vm.provision :shell, privileged: false, :inline => "cd iSDX && bash setup/basic-setup.sh"
   config.vm.provision :shell, privileged: false, :inline => "cd iSDX && bash setup/ovs-setup.sh"
   config.vm.provision :shell, privileged: false, :inline => "cd iSDX && bash setup/mininet-setup.sh"
